@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="FishTankController"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/cory/ClionProjects/FishTankController/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/cory/ClionProjects/FishTankController/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PLATFORMIO_REBUILD_PROJECT_INDEX">
+				<Option working_dir="/Users/cory/ClionProjects/FishTankController/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 PLATFORMIO_REBUILD_PROJECT_INDEX"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PLATFORMIO_UPDATE_ALL">
+				<Option working_dir="/Users/cory/ClionProjects/FishTankController/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 PLATFORMIO_UPDATE_ALL"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PLATFORMIO_UPLOADFS">
+				<Option working_dir="/Users/cory/ClionProjects/FishTankController/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 PLATFORMIO_UPLOADFS"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="FishTankController">
+				<Option output="/Users/cory/ClionProjects/FishTankController/cmake-build-debug/FishTankController" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/cory/ClionProjects/FishTankController/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DARDUINO=20300"/>
+					<Add option="-DLWIP_OPEN_SRC"/>
+					<Add option="-DF_CPU=80000000L"/>
+					<Add option="-D__ets__"/>
+					<Add option="-DICACHE_FLASH"/>
+					<Add option="-DPLATFORMIO=30201"/>
+					<Add option="-DESP8266"/>
+					<Add option="-DARDUINO_ARCH_ESP8266"/>
+					<Add option="-DARDUINO_ESP8266_NODEMCU"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/tools/sdk/include"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/tools/sdk/lwip/include"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/cores/esp8266"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/variants/nodemcu"/>
+					<Add directory="/Users/cory/ClionProjects/FishTankController/.piolibdeps/OneWire_ID1"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/Wire"/>
+					<Add directory="/Users/cory/ClionProjects/FishTankController/.piolibdeps/RTClib_ID83"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/SPI"/>
+					<Add directory="/Users/cory/ClionProjects/FishTankController/.piolibdeps/Task_ID272/src"/>
+					<Add directory="/Users/cory/ClionProjects/FishTankController/.piolibdeps/U8g2_ID942/src"/>
+					<Add directory="/Users/cory/ClionProjects/FishTankController/.piolibdeps/DallasTemperature_ID54"/>
+					<Add directory="/Users/cory/ClionProjects/FishTankController/src"/>
+					<Add directory="/Users/cory/ClionProjects/FishTankController/.piolibdeps/Shifty_ID801/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ArduinoOTA"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/DNSServer/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/EEPROM"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266AVRISP/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266HTTPClient/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266HTTPUpdateServer/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266SSDP"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WebServer/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFi/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFiMesh/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266httpUpdate/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266mDNS"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/Ethernet/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/GDBStub/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/Hash/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/SD/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/Servo/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/SoftwareSerial"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/TFT_Touch_Shield_V2"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/Ticker"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/esp8266/src"/>
+					<Add directory="/Users/cory/.platformio/packages/toolchain-xtensa/xtensa-lx106-elf/include"/>
+					<Add directory="/Users/cory/.platformio/packages/toolchain-xtensa/lib/gcc/xtensa-lx106-elf/4.8.2/include"/>
+					<Add directory="/Users/cory/.platformio/packages/toolchain-xtensa/lib/gcc/xtensa-lx106-elf/4.8.2/include-fixed"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/8.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 FishTankController"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="FishTankController/fast">
+				<Option output="/Users/cory/ClionProjects/FishTankController/cmake-build-debug/FishTankController" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/cory/ClionProjects/FishTankController/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DARDUINO=20300"/>
+					<Add option="-DLWIP_OPEN_SRC"/>
+					<Add option="-DF_CPU=80000000L"/>
+					<Add option="-D__ets__"/>
+					<Add option="-DICACHE_FLASH"/>
+					<Add option="-DPLATFORMIO=30201"/>
+					<Add option="-DESP8266"/>
+					<Add option="-DARDUINO_ARCH_ESP8266"/>
+					<Add option="-DARDUINO_ESP8266_NODEMCU"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/tools/sdk/include"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/tools/sdk/lwip/include"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/cores/esp8266"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/variants/nodemcu"/>
+					<Add directory="/Users/cory/ClionProjects/FishTankController/.piolibdeps/OneWire_ID1"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/Wire"/>
+					<Add directory="/Users/cory/ClionProjects/FishTankController/.piolibdeps/RTClib_ID83"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/SPI"/>
+					<Add directory="/Users/cory/ClionProjects/FishTankController/.piolibdeps/Task_ID272/src"/>
+					<Add directory="/Users/cory/ClionProjects/FishTankController/.piolibdeps/U8g2_ID942/src"/>
+					<Add directory="/Users/cory/ClionProjects/FishTankController/.piolibdeps/DallasTemperature_ID54"/>
+					<Add directory="/Users/cory/ClionProjects/FishTankController/src"/>
+					<Add directory="/Users/cory/ClionProjects/FishTankController/.piolibdeps/Shifty_ID801/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ArduinoOTA"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/DNSServer/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/EEPROM"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266AVRISP/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266HTTPClient/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266HTTPUpdateServer/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266SSDP"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WebServer/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFi/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFiMesh/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266httpUpdate/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266mDNS"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/Ethernet/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/GDBStub/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/Hash/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/SD/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/Servo/src"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/SoftwareSerial"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/TFT_Touch_Shield_V2"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/Ticker"/>
+					<Add directory="/Users/cory/.platformio/packages/framework-arduinoespressif8266/libraries/esp8266/src"/>
+					<Add directory="/Users/cory/.platformio/packages/toolchain-xtensa/xtensa-lx106-elf/include"/>
+					<Add directory="/Users/cory/.platformio/packages/toolchain-xtensa/lib/gcc/xtensa-lx106-elf/4.8.2/include"/>
+					<Add directory="/Users/cory/.platformio/packages/toolchain-xtensa/lib/gcc/xtensa-lx106-elf/4.8.2/include-fixed"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/8.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 FishTankController/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PLATFORMIO_BUILD">
+				<Option working_dir="/Users/cory/ClionProjects/FishTankController/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 PLATFORMIO_BUILD"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PLATFORMIO_PROGRAM">
+				<Option working_dir="/Users/cory/ClionProjects/FishTankController/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 PLATFORMIO_PROGRAM"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PLATFORMIO_TEST">
+				<Option working_dir="/Users/cory/ClionProjects/FishTankController/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 PLATFORMIO_TEST"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/cory/ClionProjects/FishTankController/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PLATFORMIO_CLEAN">
+				<Option working_dir="/Users/cory/ClionProjects/FishTankController/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 PLATFORMIO_CLEAN"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PLATFORMIO_UPLOAD">
+				<Option working_dir="/Users/cory/ClionProjects/FishTankController/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 PLATFORMIO_UPLOAD"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/cory/ClionProjects/FishTankController/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/display.cpp">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/display.h">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/main.cpp">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/pins.h">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/pump.cpp">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/pump.h">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/rtc.cpp">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/rtc.h">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/shift.cpp">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/shift.h">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/state.h">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/temp.cpp">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/temp.h">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/twowire.cpp">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/twowire.h">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/CMakeListsPrivate.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
