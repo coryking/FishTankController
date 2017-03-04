@@ -11,17 +11,11 @@ Shifty* setupShiftReg() {
     return reg;
 }
 
-
-
 void printStatus(uint8_t pin, ShiftDevice *device) {
     Serial.print("Writing to ");
     Serial.print(pin);
     Serial.print(" ");
     Serial.println(device->getDeviceState());
-}
-
-String ShiftDevice::getDeviceName() {
-    return this->deviceName;
 }
 
 void ShiftRegister::addDevice(uint8_t pin, bool isInputDevice, ShiftDevice *device) {

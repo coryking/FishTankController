@@ -13,11 +13,11 @@
 #include "rtc.h"
 #include "temp.h"
 #include "twowire.h"
-#include "display.h"
 #include "shift.h"
-#include "state.h"
 #include "pump.h"
 #include "relay.h"
+#include "state.h"
+#include "display.h"
 
 #define DISPLAY_FPS 15
 
@@ -75,7 +75,11 @@ void setup() {
     builder.setPumps(&pump1, &pump2);
     Serial.println("Pumps are set up...");
 
+    reg.addDevice(RELAY1_PIN, false, &relay1);
+    reg.addDevice(RELAY2_PIN, false, &relay2);
+    relay1.setDeviceState(true);
     builder.setRelays(&relay1, &relay2);
+    Serial.println("Relays are set up...");
 
     taskManager.StartTask(&reg);
     Serial.println("Shift Register is set up...");

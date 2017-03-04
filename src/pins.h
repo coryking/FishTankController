@@ -23,4 +23,7 @@
 #define PUMP1_PIN 4
 #define PUMP2_PIN 5
 
+#define RELAY1_PIN 6
+#define RELAY2_PIN 7
+
 #endif //FISHTANKCONTROLLER_PINS_H
