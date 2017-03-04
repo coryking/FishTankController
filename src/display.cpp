@@ -42,7 +42,7 @@ void Display::OnUpdate(uint32_t deltaTime) {
 
     if(GlobalState::instance()->getP1()->getMotorState() == MotorState::ACTIVE) {
         display->setCursor(0, 40);
-        display->print(GlobalState::instance()->getP1()->getRemainingAmountUl() / 1000);
+        display->print(GlobalState::instance()->getP1()->getRemainingAmountMl());
         display->print(" ML");
     }
 

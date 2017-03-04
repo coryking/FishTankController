@@ -17,6 +17,7 @@
 #include "shift.h"
 #include "state.h"
 #include "pump.h"
+#include "relay.h"
 
 #define DISPLAY_FPS 15
 
@@ -33,11 +34,17 @@ Display* display;
 
 ShiftRegister reg(MsToTaskTime(10));
 
-Pump pump1(500, "P1");
-Pump pump2(600, "P2");
+Pump pump1(0.78, "P1");
+Pump pump2(0.73, "P2");
+
+Relay relay1("R1");
+Relay relay2("R2");
 
 void OnDoPump(uint32_t deltaTime);
-FunctionTask taskPumpStuff(OnDoPump, MsToTaskTime(10000));
+FunctionTask taskPumpStuff(OnDoPump, MsToTaskTime(30000));
+
+void onDoRelay(uint32_t deltaTime);
+FunctionTask taskRelayStuff(onDoRelay, MsToTaskTime(10000));
 
 void setup() {
     Serial.begin(9600);
@@ -68,6 +75,8 @@ void setup() {
     builder.setPumps(&pump1, &pump2);
     Serial.println("Pumps are set up...");
 
+    builder.setRelays(&relay1, &relay2);
+
     taskManager.StartTask(&reg);
     Serial.println("Shift Register is set up...");
     builder.initialize();
@@ -76,7 +85,7 @@ void setup() {
     taskManager.StartTask(display);
 
     taskManager.StartTask(&taskPumpStuff);
-
+    taskManager.StartTask(&taskRelayStuff);
     Serial.println("Bottom of setup!!");
 }
 
@@ -85,5 +94,9 @@ void loop() {
 }
 
 void OnDoPump(uint32_t deltaTime) {
-    pump1.dispenseAmount(4000);
+    pump1.dispenseAmount(24.1);
+}
+void onDoRelay(uint32_t deltaTime) {
+    relay1.setDeviceState(!relay1.getDeviceState());
+    relay2.setDeviceState(!relay2.getDeviceState());
 }

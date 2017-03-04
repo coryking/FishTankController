@@ -8,6 +8,7 @@
 #include <RTClib.h>
 #include "temp.h"
 #include "pump.h"
+#include "relay.h"
 
 class GlobalState {
     static GlobalState *s_instance;
@@ -19,12 +20,16 @@ private:
     RTC_DS3231* rtc;
     Pump* p1;
     Pump* p2;
+    Relay* r1;
+    Relay* r2;
 
-    GlobalState(Temp* aquariumTemp, RTC_DS3231* rtc, Pump* p1, Pump* p2){
+    GlobalState(Temp* aquariumTemp, RTC_DS3231* rtc, Pump* p1, Pump* p2, Relay* r1, Relay* r2){
         this->_aquariumTemp = aquariumTemp;
         this->rtc=rtc;
         this->p1 = p1;
         this->p2 = p2;
+        this->r1 = r1;
+        this->r2 = r2;
     }
 
 public:
@@ -42,6 +47,12 @@ public:
     Pump* getP2() {
         return p2;
     }
+    Relay* getR1() {
+        return r1;
+    }
+    Relay* getR2() {
+        return r2;
+    }
     static GlobalState *instance() {
         return s_instance;
     }
@@ -53,7 +64,8 @@ private:
     RTC_DS3231* rtc;
     Pump* p1;
     Pump* p2;
-
+    Relay* r1;
+    Relay* r2;
 public:
     Builder(){}
 
@@ -73,12 +85,20 @@ public:
         return *this;
     }
 
+    Builder& setRelays(Relay* r1, Relay* r2) {
+        this->r1=r1;
+        this->r2=r2;
+        return *this;
+    }
+
     void initialize() {
         GlobalState::s_instance = new GlobalState(
                 this->_aquariumTemp,
                 this->rtc,
                 this->p1,
-                this->p2
+                this->p2,
+                this->r1,
+                this->r2
         );
     }
 };

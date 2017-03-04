@@ -18,10 +18,12 @@ enum ShiftPinMode {
 };
 
 class ShiftDevice {
+private:
+    String deviceName;
 protected:
-    ShiftDevice(){}
+    ShiftDevice(String deviceName){this->deviceName=deviceName;}
 public:
-
+    String getDeviceName();
 
     virtual bool getDeviceState();
     virtual void setDeviceState(bool newState) {}

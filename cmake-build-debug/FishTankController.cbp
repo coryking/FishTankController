@@ -270,6 +270,12 @@
 		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/pump.h">
 			<Option target="FishTankController"/>
 		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/relay.cpp">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/relay.h">
+			<Option target="FishTankController"/>
+		</Unit>
 		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/rtc.cpp">
 			<Option target="FishTankController"/>
 		</Unit>

@@ -9,7 +9,6 @@
 #include <Task.h>
 #include "shift.h"
 
-
 enum MotorState {
     IDLE,
     ACTIVE
@@ -17,24 +16,29 @@ enum MotorState {
 
 class Pump : public Task, public ShiftDevice {
 private:
-    uint32_t requestedAmountUl;
-    uint32_t UlPerMs;
+    uint32_t requestedAmountNl;
+    uint32_t NlPerMs;
     MotorState currentState = MotorState::IDLE;
-    String pumpName;
 public:
-    Pump(uint32_t ulPerMs, String pumpName);
+    Pump(float mlPerS, String pumpName);
 
-    void dispenseAmount(uint32_t requestedAmountUl) {
-        this->requestedAmountUl += requestedAmountUl;
+    void dispenseAmount(float_t theRequestedAmountMl) {
+        Serial.print(this->requestedAmountNl);
+        Serial.print(" dispensing: ");
+        Serial.print(theRequestedAmountMl * 1000 * 1000);
+        this->requestedAmountNl = this->requestedAmountNl + (1000 * 1000 * theRequestedAmountMl);
+        Serial.print(" remaining: ");
+        Serial.println(this->requestedAmountNl);
     }
 
-    String getPumpName() {
-        return this->pumpName;
+    float_t getRemainingAmountMl() {
+        return this->getRemainingAmountNl() / (1000.0 * 1000.0);
     }
 
-    uint32_t getRemainingAmountUl() {
-        return this->requestedAmountUl;
+    uint32_t getRemainingAmountNl() {
+        return this->requestedAmountNl;
     }
+
 
     MotorState getMotorState() {
         return currentState;

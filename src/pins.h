@@ -20,7 +20,7 @@
 
 #define SHIFT_PINS 8
 
-#define PUMP1_PIN 6
-#define PUMP2_PIN 7
+#define PUMP1_PIN 4
+#define PUMP2_PIN 5
 
 #endif //FISHTANKCONTROLLER_PINS_H
