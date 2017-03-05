@@ -7,16 +7,20 @@
 #include "shift.h"
 #include "pump.h"
 
+#define PUMP_DEBUG false
+
 void Pump::OnUpdate(uint32_t deltaTime){
     Task::OnUpdate(deltaTime);
     if(getMotorState() == MotorState::ACTIVE) {
         uint32_t amountPumped = NlPerMs * deltaTime;
         this->requestedAmountNl = max(0, (int32_t)(this->requestedAmountNl - amountPumped));
-        Serial.print(this->requestedAmountNl);
-        Serial.print(" ");
-        Serial.print(deltaTime);
-        Serial.print(" ");
-        Serial.println(amountPumped);
+        if(PUMP_DEBUG) {
+            Serial.print(this->requestedAmountNl);
+            Serial.print(" ");
+            Serial.print(deltaTime);
+            Serial.print(" ");
+            Serial.println(amountPumped);
+        }
         if(this->requestedAmountNl <= 0) {
             Serial.print(this->getDeviceName());
             Serial.println(": Setting to idle...");

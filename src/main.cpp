@@ -16,6 +16,7 @@
 #include "shift.h"
 #include "pump.h"
 #include "relay.h"
+#include "button.h"
 #include "state.h"
 #include "display.h"
 
@@ -39,6 +40,9 @@ Pump pump2(0.73, "P2");
 
 Relay relay1("R1");
 Relay relay2("R2");
+
+Button button1("B1");
+Button button2("B2");
 
 void OnDoPump(uint32_t deltaTime);
 FunctionTask taskPumpStuff(OnDoPump, MsToTaskTime(30000));
@@ -68,18 +72,26 @@ void setup() {
     builder.setRTC(rtc);
     delay(2000);
     Serial.println("RTC is set up...");
-    reg.addDevice(PUMP1_PIN, false, &pump1);
+    reg.addDevice(PUMP1_PIN, false, &pump1)
+       .addDevice(PUMP2_PIN, false, &pump2);
     taskManager.StartTask(&pump1);
-    reg.addDevice(PUMP2_PIN, false, &pump2);
     taskManager.StartTask(&pump2);
     builder.setPumps(&pump1, &pump2);
     Serial.println("Pumps are set up...");
 
-    reg.addDevice(RELAY1_PIN, false, &relay1);
-    reg.addDevice(RELAY2_PIN, false, &relay2);
+    reg.addDevice(RELAY1_PIN, false, &relay1)
+       .addDevice(RELAY2_PIN, false, &relay2);
     relay1.setDeviceState(true);
     builder.setRelays(&relay1, &relay2);
     Serial.println("Relays are set up...");
+
+    Button::ButtonCallbackFn onB1ChangeHandler = [](Button *button) {
+        pump2.dispenseAmount(5.0);
+    };
+    button1.setOnReleased(onB1ChangeHandler);
+    reg.addDevice(BUTTON1_PIN, true, &button1)
+       .addDevice(BUTTON2_PIN, true, &button2);
+    builder.setButtons(&button1, &button2);
 
     taskManager.StartTask(&reg);
     Serial.println("Shift Register is set up...");

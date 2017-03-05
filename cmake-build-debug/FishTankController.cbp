@@ -252,6 +252,12 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/Button.cpp">
+			<Option target="FishTankController"/>
+		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/Button.h">
+			<Option target="FishTankController"/>
+		</Unit>
 		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/display.cpp">
 			<Option target="FishTankController"/>
 		</Unit>

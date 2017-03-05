@@ -26,4 +26,8 @@
 #define RELAY1_PIN 6
 #define RELAY2_PIN 7
 
+#define BUTTON1_PIN 1
+#define BUTTON2_PIN 2
+#define BUTTON3_PIN 3
+
 #endif //FISHTANKCONTROLLER_PINS_H

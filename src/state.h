@@ -9,6 +9,7 @@
 #include "temp.h"
 #include "pump.h"
 #include "relay.h"
+#include "Button.h"
 
 class GlobalState {
     static GlobalState *s_instance;
@@ -22,14 +23,19 @@ private:
     Pump* p2;
     Relay* r1;
     Relay* r2;
+    Button *b1;
+    Button *b2;
 
-    GlobalState(Temp* aquariumTemp, RTC_DS3231* rtc, Pump* p1, Pump* p2, Relay* r1, Relay* r2){
+
+    GlobalState(Temp* aquariumTemp, RTC_DS3231* rtc, Pump* p1, Pump* p2, Relay* r1, Relay* r2, Button* b1, Button* b2){
         this->_aquariumTemp = aquariumTemp;
         this->rtc=rtc;
         this->p1 = p1;
         this->p2 = p2;
         this->r1 = r1;
         this->r2 = r2;
+        this->b1 = b1;
+        this->b2 = b2;
     }
 
 public:
@@ -53,6 +59,14 @@ public:
     Relay* getR2() {
         return r2;
     }
+    Button* getB1() {
+        return b1;
+    }
+
+    Button* getB2() {
+        return  b2;
+    }
+
     static GlobalState *instance() {
         return s_instance;
     }
@@ -66,6 +80,9 @@ private:
     Pump* p2;
     Relay* r1;
     Relay* r2;
+    Button *b1;
+    Button *b2;
+
 public:
     Builder(){}
 
@@ -91,6 +108,11 @@ public:
         return *this;
     }
 
+    Builder& setButtons(Button* b1, Button* b2) {
+        this->b1=b1;
+        this->b2=b2;
+    }
+
     void initialize() {
         GlobalState::s_instance = new GlobalState(
                 this->_aquariumTemp,
@@ -98,7 +120,9 @@ public:
                 this->p1,
                 this->p2,
                 this->r1,
-                this->r2
+                this->r2,
+                this->b1,
+                this->b2
         );
     }
 };

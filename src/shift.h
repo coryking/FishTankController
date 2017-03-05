@@ -42,10 +42,14 @@ public:
     ShiftRegister(uint32_t timeInterval) : Task(timeInterval) {
         this->reg = setupShiftReg();
     }
-    void addDevice(uint8_t pin, bool isInputDevice, ShiftDevice* device);
+    ShiftRegister& addDevice(uint8_t pin, bool isInputDevice, ShiftDevice* device);
 
 protected:
     virtual void OnUpdate(uint32_t deltaTime);
+
+    void writeToPins() const;
+
+    void readFromPins() const;
 };
 
 #endif //FISHTANKCONTROLLER_SHIFT_H
