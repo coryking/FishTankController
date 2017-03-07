@@ -51,4 +51,4 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(${PROJECT_NAME} ${SRC_LIST} src/shift.h src/pump.h src/shift.cpp src/pump.cpp src/relay.h src/relay.cpp src/Button.cpp src/Button.h)
+add_executable(${PROJECT_NAME} ${SRC_LIST} src/shift.h src/pump.h src/shift.cpp src/pump.cpp src/relay.h src/relay.cpp src/Button.cpp src/Button.h src/Utils.cpp src/Utils.h)

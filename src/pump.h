@@ -8,19 +8,28 @@
 #include <Arduino.h>
 #include <Task.h>
 #include "shift.h"
+#include "Utils.h"
 
 enum MotorState {
     IDLE,
-    ACTIVE
+    ACTIVE,
+    FORCE_ACTIVE
 };
 
 class Pump : public Task, public ShiftDevice {
 private:
+    uint32_t dispensedAmountNl;
     uint32_t requestedAmountNl;
     uint32_t NlPerMs;
     MotorState currentState = MotorState::IDLE;
 public:
     Pump(float mlPerS, String pumpName);
+
+    void startDispenser();
+    void stopDispenser();
+    bool isDispensing();
+
+
 
     void dispenseAmount(float_t theRequestedAmountMl) {
         Serial.print(this->requestedAmountNl);
@@ -31,8 +40,12 @@ public:
         Serial.println(this->requestedAmountNl);
     }
 
-    float_t getRemainingAmountMl() {
-        return this->getRemainingAmountNl() / (1000.0 * 1000.0);
+    /**
+     * Get the amount dispensed since the pump started
+     * @return the mount of nanoliters dispensed since the pump started
+     */
+    uint32_t getAmountDispensedNl() {
+        return this->dispensedAmountNl;
     }
 
     uint32_t getRemainingAmountNl() {
@@ -45,7 +58,7 @@ public:
     }
 
     virtual bool getDeviceState() {
-        return (getMotorState() == MotorState::ACTIVE) ? true : false;
+        return (getMotorState() != MotorState::IDLE);
     }
     virtual void OnUpdate(uint32_t deltaTime);
 };

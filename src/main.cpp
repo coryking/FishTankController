@@ -85,10 +85,13 @@ void setup() {
     builder.setRelays(&relay1, &relay2);
     Serial.println("Relays are set up...");
 
-    Button::ButtonCallbackFn onB1ChangeHandler = [](Button *button) {
-        pump2.dispenseAmount(5.0);
+    Button::ButtonCallbackFn onB1PressedHandler = [](Button *button) {
+        pump1.startDispenser();
     };
-    button1.setOnReleased(onB1ChangeHandler);
+    Button::ButtonCallbackFn  onB1ReleasedHandler = [](Button *button) {
+        pump1.stopDispenser();
+    };
+    button1.setOnReleased(onB1ReleasedHandler).setOnPressed(onB1PressedHandler);
     reg.addDevice(BUTTON1_PIN, true, &button1)
        .addDevice(BUTTON2_PIN, true, &button2);
     builder.setButtons(&button1, &button2);

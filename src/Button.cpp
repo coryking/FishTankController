@@ -21,9 +21,6 @@ bool Button::getDeviceState() {
 
 void Button::setDeviceState(bool newState) {
     ShiftDevice::setDeviceState(newState);
-    Serial.print(this->getDeviceName());
-    Serial.print(" newState: ");
-    Serial.println(newState);
 
     uint32_t ms = millis();
     bool pinVal = newState;

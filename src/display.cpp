@@ -3,6 +3,7 @@
 //
 
 #include <U8g2lib.h>
+#include "Utils.h"
 #include "display.h"
 #include "pins.h"
 #include "state.h"
@@ -40,14 +41,14 @@ void Display::OnUpdate(uint32_t deltaTime) {
     int w = display->getStrWidth(ptime);
     display->drawStr(128-w, 15, ptime);
 
-    if(GlobalState::instance()->getP1()->getMotorState() == MotorState::ACTIVE) {
+    if(GlobalState::instance()->getP1()->isDispensing()) {
         display->setCursor(0, 40);
-        display->print(GlobalState::instance()->getP1()->getRemainingAmountMl());
+        display->print(Utils::NLtoML(GlobalState::instance()->getP1()->getAmountDispensedNl()));
         display->print(" mL");
     }
-    if(GlobalState::instance()->getP2()->getMotorState() == MotorState::ACTIVE) {
+    if(GlobalState::instance()->getP2()->isDispensing()) {
         display->setCursor(0, 60);
-        display->print(GlobalState::instance()->getP2()->getRemainingAmountMl());
+        display->print(Utils::NLtoML(GlobalState::instance()->getP2()->getAmountDispensedNl()));
         display->print(" mL");
     }
     display->sendBuffer();
