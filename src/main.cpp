@@ -7,9 +7,10 @@
 #include <SPI.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
-
+#include <Time.h>
 #include <Task.h>
 
+#include "DoseKeeper.h"
 #include "rtc.h"
 #include "temp.h"
 #include "twowire.h"
@@ -21,6 +22,7 @@
 #include "display.h"
 
 #define DISPLAY_FPS 15
+#define SYNC_INTERVAL 30
 
 GlobalState *GlobalState::s_instance = 0;
 
@@ -34,6 +36,9 @@ Temp* aquariumTemp;
 Display* display;
 
 ShiftRegister reg(MsToTaskTime(10));
+
+DoseKeeper keeper1(20, 30.0, "Macro");
+DoseKeeper keeper2(20, 30.0, "Trace");
 
 Pump pump1(0.78, "P1");
 Pump pump2(0.73, "P2");
@@ -49,6 +54,14 @@ FunctionTask taskPumpStuff(OnDoPump, MsToTaskTime(30000));
 
 void onDoRelay(uint32_t deltaTime);
 FunctionTask taskRelayStuff(onDoRelay, MsToTaskTime(10000));
+
+time_t syncRtcTime() {
+    if(rtc != NULL) {
+        return rtc->now().unixtime();
+    } else {
+        return 0;
+    }
+}
 
 void setup() {
     Serial.begin(9600);
@@ -66,12 +79,20 @@ void setup() {
     aquariumTemp = new Temp(sensors,0, MsToTaskTime(5000));
     builder.setAquariumTemp(aquariumTemp);
     taskManager.StartTask(aquariumTemp);
-
     delay(2000);
+
     rtc = setupRtc(displayModule);
     builder.setRTC(rtc);
-    delay(2000);
+    setSyncProvider(syncRtcTime);
+    setSyncInterval(SYNC_INTERVAL);
+    if(timeStatus() != timeSet) {
+        Serial.println("Unable to sync with the RTC");
+    } else {
+        Serial.println("RTC has set the system time");
+    }
     Serial.println("RTC is set up...");
+    delay(2000);
+
     reg.addDevice(PUMP1_PIN, false, &pump1)
        .addDevice(PUMP2_PIN, false, &pump2);
     taskManager.StartTask(&pump1);
@@ -113,7 +134,7 @@ void loop() {
 }
 
 void OnDoPump(uint32_t deltaTime) {
-    pump1.dispenseAmount(24.1);
+    pump1.dispenseAmount(keeper1.getDoseForInterval(1));
 }
 void onDoRelay(uint32_t deltaTime) {
     relay1.setDeviceState(!relay1.getDeviceState());

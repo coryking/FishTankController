@@ -5,10 +5,10 @@
 #include <RTClib.h>
 #include <Task.h>
 #include "rtc.h"
+#include <TimeLib.h>
 
 RTC_DS3231 *setupRtc(U8G2 *display) {
     RTC_DS3231* rtc = new RTC_DS3231();
-
     if (! rtc->begin()) {
         display->clearBuffer();
         display->println("Couldn't find RTC");
