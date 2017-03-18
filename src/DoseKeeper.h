@@ -19,6 +19,13 @@ public:
      */
     float getDoseForInterval(uint8_t interval);
     const String &getDoseName() const;
+
+    void setIntervals(uint8_t intervals);
+
+    void setDailyDoseMl(float dailyDoseMl);
+
+    void setDoseName(const String &doseName);
+
     DoseKeeper(const uint8_t intervals, const float dailyDoseMl, const String doseName);
 private:
     uint8_t intervals;

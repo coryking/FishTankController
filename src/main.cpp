@@ -2,14 +2,20 @@
 // Created by Cory King on 2/18/17.
 //
 
+#include <vector>
+
 #include <Arduino.h>
 
+#include <FS.h>
 #include <SPI.h>
 #include <OneWire.h>
+#include <Chronos.h>
 #include <DallasTemperature.h>
 #include <Time.h>
 #include <Task.h>
 
+#include "Settings.h"
+#include "ControllerEvent.h"
 #include "DoseKeeper.h"
 #include "rtc.h"
 #include "temp.h"
@@ -37,8 +43,8 @@ Display* display;
 
 ShiftRegister reg(MsToTaskTime(10));
 
-DoseKeeper keeper1(20, 30.0, "Macro");
-DoseKeeper keeper2(20, 30.0, "Trace");
+DoseKeeper keeper1(1, 30.0, "Macro");
+DoseKeeper keeper2(1, 30.0, "Trace");
 
 Pump pump1(0.78, "P1");
 Pump pump2(0.73, "P2");
@@ -49,11 +55,23 @@ Relay relay2("R2");
 Button button1("B1");
 Button button2("B2");
 
+ControllerEventList eventList;
+
+Settings settings;
+
+DefineCalendarType(Calendar, 20)
+Calendar myCalendar;
+
 void OnDoPump(uint32_t deltaTime);
 FunctionTask taskPumpStuff(OnDoPump, MsToTaskTime(30000));
 
 void onDoRelay(uint32_t deltaTime);
 FunctionTask taskRelayStuff(onDoRelay, MsToTaskTime(10000));
+
+void onDoSchedule(uint32_t deltaTime);
+FunctionTask taskSchedule(onDoSchedule, MsToTaskTime(1000));
+
+void setDevicesFromSettings();
 
 time_t syncRtcTime() {
     if(rtc != NULL) {
@@ -65,6 +83,9 @@ time_t syncRtcTime() {
 
 void setup() {
     Serial.begin(9600);
+
+    SPIFFS.begin();
+
     setupTwoWire();
     Serial.println("two wire set up...");
 
@@ -126,7 +147,12 @@ void setup() {
 
     taskManager.StartTask(&taskPumpStuff);
     taskManager.StartTask(&taskRelayStuff);
+
+    taskManager.StartTask(&taskSchedule);
     Serial.println("Bottom of setup!!");
+
+    settings = loadSettings(settings);
+    setDevicesFromSettings();
 }
 
 void loop() {
@@ -140,3 +166,75 @@ void onDoRelay(uint32_t deltaTime) {
     relay1.setDeviceState(!relay1.getDeviceState());
     relay2.setDeviceState(!relay2.getDeviceState());
 }
+
+/*
+ * // Dont think we will need this
+EventStates initEventStates(ControllerEvents m) {
+    EventStates items;
+    for(ControllerEvents::iterator it = m.begin(); it != m.end(); ++it) {
+        items[it->first] = false;
+    }
+    return items;
+}
+*/
+
+// Sync the events that should be active or inactive with the list of controller events
+void syncEventStates(EventStates states) {
+    for(ControllerEvents::iterator it = eventList.begin(); it != eventList.end(); ++it) {
+        if(eventList[it->first] != NULL) {
+            eventList[it->first]->setActiveState(states[it->first]);
+        }
+    }
+}
+
+void onDoSchedule(uint32_t deltaTime) {
+    Chronos::Event::Occurrence occurrenceList[14];
+    uint8_t numOngoing = myCalendar.listOngoing(14, occurrenceList, Chronos::DateTime::now());
+
+    EventStates states;
+    for (uint8_t i=0; i<numOngoing; i++) {
+        states[occurrenceList[i].id] = true;
+    }
+
+    syncEventStates(states);
+}
+
+void setPumpFromSettings(Chronos::EventID eventID, PumpSetting *ps, DoseKeeper *dk, Pump *p) {
+    dk->setDoseName(ps->getDoseName());
+    dk->setDailyDoseMl(ps->getDoseAmount());
+    p->setDeviceName(ps->getName());
+    p->setMlPerS(ps->getDoseRate());
+
+    myCalendar.add(
+            Chronos::Event(eventID,
+                           ps->getDoseTime(),
+                           Chronos::Span::Hours(10)
+            )
+    );
+
+    eventList.setEvent(eventID, [] {
+        p->dispenseAmount(dk->getDoseForInterval(1));
+    }, []{
+
+    });
+}
+
+void setRelayFromSettings(Chronos::EventID eventID, RelaySetting *rs, Relay *r) {
+    r->setDeviceName(rs->getName());
+    myCalendar.add(
+        Chronos::Event(eventID,
+            rs->getOnTime(), rs->getDuration())
+    );
+    eventList.setEvent(eventID, []{
+        r->setDeviceState(true);
+    }, []{
+        r->setDeviceState(false);
+    });
+}
+
+void setDevicesFromSettings() {
+    setPumpFromSettings(P1_EVENT, settings.getPump1(), &keeper1, &pump1);
+    setPumpFromSettings(P2_EVENT, settings.getPump2(), &keeper2, &pump2);
+    setRelayFromSettings(RELAY1_EVENT, settings.getRelay1(), &relay1);
+}
+

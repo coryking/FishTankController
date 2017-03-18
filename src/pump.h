@@ -22,6 +22,7 @@ private:
     uint32_t requestedAmountNl;
     uint32_t NlPerMs;
     MotorState currentState = MotorState::IDLE;
+
 public:
     Pump(float mlPerS, String pumpName);
 
@@ -29,6 +30,7 @@ public:
     void stopDispenser();
     bool isDispensing();
 
+    void setMlPerS(float_t mlPerS);
 
 
     void dispenseAmount(float_t theRequestedAmountMl) {

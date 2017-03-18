@@ -24,6 +24,7 @@ protected:
     ShiftDevice(String deviceName){this->deviceName=deviceName;}
 public:
     String getDeviceName(){return this->deviceName;}
+    void setDeviceName(String deviceName){ this->deviceName = deviceName; }
 
     virtual bool getDeviceState() = 0;
     virtual void setDeviceState(bool newState) {}

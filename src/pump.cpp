@@ -49,6 +49,10 @@ Pump::Pump(float_t mlPerS, String deviceName) : Task(MsToTaskTime(20)), ShiftDev
     this->requestedAmountNl=0;
 }
 
+void Pump::setMlPerS(float_t mlPerS) {
+    this->NlPerMs = mlPerS * 1000.0;
+}
+
 void Pump::startDispenser() {
     if(!isDispensing()) {
         dispensedAmountNl = 0;

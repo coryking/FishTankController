@@ -29,3 +29,15 @@ DoseKeeper::DoseKeeper(const uint8_t intervals, const float dailyDoseMl, const S
     this->dailyDoseMl = dailyDoseMl;
     this->doseName = doseName;
 }
+
+void DoseKeeper::setIntervals(uint8_t intervals) {
+    DoseKeeper::intervals = intervals;
+}
+
+void DoseKeeper::setDailyDoseMl(float dailyDoseMl) {
+    DoseKeeper::dailyDoseMl = dailyDoseMl;
+}
+
+void DoseKeeper::setDoseName(const String &doseName) {
+    DoseKeeper::doseName = doseName;
+}
