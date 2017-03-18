@@ -47,9 +47,11 @@ void ShiftRegister::readFromPins() const {
         if(map[i].device != NULL) {
             if (map[i].mode == READ) {
                 bool state = reg->readBit(i);
-                Serial.print(i);
-                Serial.print(" reading... ");
-                Serial.println(state);
+                if(SHIFT_DEBUG) {
+                    Serial.print(i);
+                    Serial.print(" reading... ");
+                    Serial.println(state);
+                }
                 map[i].device->setDeviceState(state);
                 printStatus(i, map[i].device);
             }

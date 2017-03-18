@@ -5,7 +5,7 @@
 #include <vector>
 
 #include <Arduino.h>
-
+#include <Hash.h>
 #include <FS.h>
 #include <SPI.h>
 #include <OneWire.h>
@@ -13,6 +13,13 @@
 #include <DallasTemperature.h>
 #include <Time.h>
 #include <Task.h>
+
+#include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
+
+#include <ESPAsyncWebServer.h>
+
+#include "Wifi.h"
 
 #include "Settings.h"
 #include "ControllerEvent.h"
@@ -73,6 +80,8 @@ FunctionTask taskSchedule(onDoSchedule, MsToTaskTime(1000));
 
 void setDevicesFromSettings();
 
+void setupWebServer();
+
 time_t syncRtcTime() {
     if(rtc != NULL) {
         return rtc->now().unixtime();
@@ -82,7 +91,24 @@ time_t syncRtcTime() {
 }
 
 void setup() {
+    sprintf(hostString, "ESP_%06X", ESP.getChipId());
+
+
     Serial.begin(9600);
+
+    setupWiFi();
+
+    Serial.print("Waiting for Wifi");
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+        Serial.print(WiFi.status());
+    }
+    Serial.println("");
+    Serial.println("WiFi connected");
+
+    delay(3000);
+
 
     SPIFFS.begin();
 
@@ -149,11 +175,50 @@ void setup() {
     taskManager.StartTask(&taskRelayStuff);
 
     taskManager.StartTask(&taskSchedule);
-    Serial.println("Bottom of setup!!");
+
 
     settings = loadSettings(settings);
     setDevicesFromSettings();
+
+    setupMDNS();
+    setupWebServer();
+
+    Serial.println("Bottom of setup!!");
 }
+
+void onPostConfig(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+
+    DynamicJsonBuffer jsonInBuffer;
+    JsonObject& input = jsonInBuffer.parseObject(reinterpret_cast<char*>(data));
+
+    if(input.success()) {
+        settings = Settings::fromJson(input);
+    }
+}
+
+void setupWebServer() {
+
+    Serial.println("Setting up Web Server...");
+    ArRequestHandlerFunction getConfig = [](AsyncWebServerRequest *request){
+        AsyncResponseStream *response = request->beginResponseStream("text/json");
+
+        StaticJsonBuffer<400> jsonBuffer;
+        JsonObject& json = jsonBuffer.createObject();
+        settings.toJson(json);
+
+        json.printTo(*response);
+
+        request->send(response);
+    };
+    server.on("/config", HTTP_GET, getConfig);
+
+    ArBodyHandlerFunction  onPostBodyHandler = &onPostConfig;
+    AsyncCallbackWebHandler pHandler = server.on("/config", HTTP_POST, getConfig, NULL, onPostBodyHandler);
+
+    server.begin();
+    Serial.println("Web Server Running...");
+}
+
 
 void loop() {
     taskManager.Loop();
@@ -163,7 +228,6 @@ void OnDoPump(uint32_t deltaTime) {
     pump1.dispenseAmount(keeper1.getDoseForInterval(1));
 }
 void onDoRelay(uint32_t deltaTime) {
-    relay1.setDeviceState(!relay1.getDeviceState());
     relay2.setDeviceState(!relay2.getDeviceState());
 }
 
@@ -199,11 +263,12 @@ void onDoSchedule(uint32_t deltaTime) {
     syncEventStates(states);
 }
 
-void setPumpFromSettings(Chronos::EventID eventID, PumpSetting *ps, DoseKeeper *dk, Pump *p) {
-    dk->setDoseName(ps->getDoseName());
-    dk->setDailyDoseMl(ps->getDoseAmount());
-    p->setDeviceName(ps->getName());
-    p->setMlPerS(ps->getDoseRate());
+
+void setPumpFromSettings(Chronos::EventID eventID, PumpSetting *ps, DoseKeeper dk, Pump p) {
+    dk.setDoseName(ps->getDoseName());
+    dk.setDailyDoseMl(ps->getDoseAmount());
+    p.setDeviceName(ps->getName());
+    p.setMlPerS(ps->getDoseRate());
 
     myCalendar.add(
             Chronos::Event(eventID,
@@ -211,12 +276,6 @@ void setPumpFromSettings(Chronos::EventID eventID, PumpSetting *ps, DoseKeeper *
                            Chronos::Span::Hours(10)
             )
     );
-
-    eventList.setEvent(eventID, [] {
-        p->dispenseAmount(dk->getDoseForInterval(1));
-    }, []{
-
-    });
 }
 
 void setRelayFromSettings(Chronos::EventID eventID, RelaySetting *rs, Relay *r) {
@@ -225,16 +284,28 @@ void setRelayFromSettings(Chronos::EventID eventID, RelaySetting *rs, Relay *r) 
         Chronos::Event(eventID,
             rs->getOnTime(), rs->getDuration())
     );
-    eventList.setEvent(eventID, []{
-        r->setDeviceState(true);
-    }, []{
-        r->setDeviceState(false);
-    });
 }
 
 void setDevicesFromSettings() {
-    setPumpFromSettings(P1_EVENT, settings.getPump1(), &keeper1, &pump1);
-    setPumpFromSettings(P2_EVENT, settings.getPump2(), &keeper2, &pump2);
+    setPumpFromSettings(P1_EVENT, settings.getPump1(), keeper1, pump1);
+    eventList.setEvent(P1_EVENT, [](){
+        pump1.dispenseAmount(keeper1.getDoseForInterval(1));
+    }, [](){
+
+    });
+
+    setPumpFromSettings(P2_EVENT, settings.getPump2(), keeper2, pump2);
+    eventList.setEvent(P2_EVENT, [](){
+        pump2.dispenseAmount(keeper2.getDoseForInterval(1));
+    }, [](){
+
+    });
+
     setRelayFromSettings(RELAY1_EVENT, settings.getRelay1(), &relay1);
+    eventList.setEvent(RELAY1_EVENT, [](){
+        relay1.setDeviceState(true);
+    }, [](){
+        relay1.setDeviceState(false);
+    });
 }
 

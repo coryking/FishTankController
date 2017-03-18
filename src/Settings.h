@@ -32,7 +32,7 @@ class PumpSetting {
 private:
     String Name;
     String doseName;
-    Chronos::Mark::Event doseTime;
+    Chronos::Mark::Event *doseTime;
     float doseAmount;
     float doseRate;
 public:
@@ -55,10 +55,10 @@ public:
     }
 
     Chronos::Mark::Event &getDoseTime() const {
-        return doseTime;
+        return *doseTime;
     }
 
-    void setDoseTime(Chronos::Mark::Event doseTime) {
+    void setDoseTime(Chronos::Mark::Event *doseTime) {
         PumpSetting::doseTime = doseTime;
     }
 
@@ -82,7 +82,7 @@ public:
         PumpSetting *pump = new PumpSetting();
         pump->Name = obj[JSON_NAME].as<String>();
         pump->doseName = obj[JSON_DOSENAME].as<String>();
-        pump->setDoseTime(Chronos::Mark::Daily(
+        pump->setDoseTime(new Chronos::Mark::Daily(
                 obj[JSON_ON][JSON_HOUR].as<Chronos::Hours>(),
                 obj[JSON_ON][JSON_MINUTE].as<Chronos::Minutes >(),
                 obj[JSON_ON][JSON_SECOND].as<Chronos::Seconds>()
@@ -98,15 +98,15 @@ public:
         obj.set(JSON_AMOUNT_ML, this->doseAmount);
         obj.set(JSON_DOSENAME, this->doseName);
         JsonObject &schedule = obj.createNestedObject(JSON_ON);
-        schedule.set(JSON_HOUR, this->doseTime.next(Chronos::DateTime::now()).hour());
-        schedule.set(JSON_MINUTE, this->doseTime.next(Chronos::DateTime::now()).minute());
-        schedule.set(JSON_SECOND, this->doseTime.next(Chronos::DateTime::now()).second());
+        schedule.set(JSON_HOUR, this->doseTime->next(Chronos::DateTime::now()).hour());
+        schedule.set(JSON_MINUTE, this->doseTime->next(Chronos::DateTime::now()).minute());
+        schedule.set(JSON_SECOND, this->doseTime->next(Chronos::DateTime::now()).second());
     }
 };
 
 class RelaySetting {
 private:
-    Chronos::Mark::Event onTime;
+    Chronos::Mark::Event *onTime;
     uint8_t hours;
     String Name;
 
@@ -115,11 +115,11 @@ public:
 
     }
 
-    Chronos::Mark::Event getOnTime() const {
-        return onTime;
+    Chronos::Mark::Event &getOnTime() const {
+        return *onTime;
     }
 
-    void setOnTime(Chronos::Mark::Event onTime) {
+    void setOnTime(Chronos::Mark::Event *onTime) {
         RelaySetting::onTime = onTime;
     }
 
@@ -136,14 +136,14 @@ public:
     }
 
     void setName(const String &Name) {
-        RelaySetting::Name = Name;
+        this->Name = Name;
     }
 
     static RelaySetting *fromJson(const JsonObject &obj) {
         RelaySetting* relay = new RelaySetting();
         relay->Name = obj[JSON_NAME].as<String>();
         relay->setHours(obj[JSON_DURATION_HOURS].as<uint8_t>());
-        relay->setOnTime(Chronos::Mark::Daily(
+        relay->setOnTime(new Chronos::Mark::Daily(
                 obj[JSON_ON][JSON_HOUR].as<Chronos::Hours>(),
                 obj[JSON_ON][JSON_MINUTE].as<Chronos::Minutes>(),
                 obj[JSON_ON][JSON_SECOND].as<Chronos::Seconds>()
@@ -154,9 +154,9 @@ public:
     void toJson(JsonObject &obj) {
         obj.set(JSON_NAME, this->Name);
         JsonObject &schedule = obj.createNestedObject("on");
-        schedule.set(JSON_HOUR, this->onTime.next(Chronos::DateTime::now()).hour());
-        schedule.set(JSON_MINUTE, this->onTime.next(Chronos::DateTime::now()).minute());
-        schedule.set(JSON_SECOND, this->onTime.next(Chronos::DateTime::now()).second());
+        schedule.set(JSON_HOUR, this->onTime->next(Chronos::DateTime::now()).hour());
+        schedule.set(JSON_MINUTE, this->onTime->next(Chronos::DateTime::now()).minute());
+        schedule.set(JSON_SECOND, this->onTime->next(Chronos::DateTime::now()).second());
         obj.set(JSON_DURATION_HOURS, this->hours);
     }
 
@@ -232,7 +232,7 @@ Settings getDefaultSettings(Settings &settings) {
 
     RelaySetting *relay1 = new RelaySetting();
     relay1->setName("Relay 1");
-    relay1->setDuration(new Chronos::Span::Hours(10));
+    relay1->setHours(10);
     relay1->setOnTime(new Chronos::Mark::Daily(7,30,0));
 
     return settings.setPump1(pump1).setPump2(pump2).setRelay1(relay1);
@@ -260,7 +260,7 @@ Settings loadSettings(Settings &settings) {
     // use configFile.readString instead.
     configFile.readBytes(buf.get(), size);
 
-    StaticJsonBuffer<200> jsonBuffer;
+    DynamicJsonBuffer jsonBuffer;
     JsonObject& json = jsonBuffer.parseObject(buf.get());
 
     if (!json.success()) {
@@ -272,7 +272,7 @@ Settings loadSettings(Settings &settings) {
 }
 
 Settings saveSettings(Settings &settings) {
-    StaticJsonBuffer<400> jsonBuffer;
+    DynamicJsonBuffer jsonBuffer;
     JsonObject& json = jsonBuffer.createObject();
     settings.toJson(json);
 
