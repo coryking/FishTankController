@@ -11,7 +11,7 @@ void Pump::OnUpdate(uint32_t deltaTime){
     uint32_t amountPumped = 0;
     if(getMotorState() == MotorState::ACTIVE) {
         amountPumped = NlPerMs * deltaTime;
-        this->requestedAmountNl = max(0, this->requestedAmountNl-amountPumped); // ((this->requestedAmountNl - amountPumped)>0)?(this->requestedAmountNl - amountPumped):0;
+        this->requestedAmountNl = max(0, (int32_t)(this->requestedAmountNl-amountPumped));
 #ifdef PUMP_DEBUG
             Serial.print(this->requestedAmountNl);
             Serial.print(" ");
