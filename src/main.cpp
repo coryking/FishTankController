@@ -105,7 +105,6 @@ void setup() {
     Serial.println("");
     Serial.println("WiFi connected");
 
-    delay(3000);
     SPIFFS.begin();
 
     setupTwoWire();
@@ -122,7 +121,6 @@ void setup() {
     aquariumTemp = new Temp(sensors,0, MsToTaskTime(5000));
     builder.setAquariumTemp(aquariumTemp);
     taskManager.StartTask(aquariumTemp);
-    delay(2000);
 
     rtc = setupRtc(displayModule);
     builder.setRTC(rtc);
@@ -134,7 +132,6 @@ void setup() {
         Serial.println("RTC has set the system time");
     }
     Serial.println("RTC is set up...");
-    delay(2000);
 
     reg.addDevice(PUMP1_PIN, false, &pump1)
        .addDevice(PUMP2_PIN, false, &pump2);
