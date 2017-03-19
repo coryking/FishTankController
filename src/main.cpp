@@ -69,12 +69,6 @@ Settings settings;
 DefineCalendarType(Calendar, 20)
 Calendar myCalendar;
 
-void OnDoPump(uint32_t deltaTime);
-FunctionTask taskPumpStuff(OnDoPump, MsToTaskTime(30000));
-
-void onDoRelay(uint32_t deltaTime);
-FunctionTask taskRelayStuff(onDoRelay, MsToTaskTime(10000));
-
 void onDoSchedule(uint32_t deltaTime);
 FunctionTask taskSchedule(onDoSchedule, MsToTaskTime(1000));
 
@@ -146,13 +140,17 @@ void setup() {
     builder.setRelays(&relay1, &relay2);
     Serial.println("Relays are set up...");
 
-    Button::ButtonCallbackFn onB1PressedHandler = [](Button *button) {
-        pump1.startDispenser();
-    };
-    Button::ButtonCallbackFn  onB1ReleasedHandler = [](Button *button) {
+    button1.setOnReleased([](Button *button){
         pump1.stopDispenser();
-    };
-    button1.setOnReleased(onB1ReleasedHandler).setOnPressed(onB1PressedHandler);
+    }).setOnPressed([](Button *button){
+        pump1.startDispenser();
+    });
+    button2.setOnReleased([](Button *button){
+        pump2.stopDispenser();
+    }).setOnPressed([](Button *button){
+        pump2.startDispenser();
+    });
+
     reg.addDevice(BUTTON1_PIN, true, &button1)
        .addDevice(BUTTON2_PIN, true, &button2);
     builder.setButtons(&button1, &button2);
@@ -163,9 +161,6 @@ void setup() {
 
     display = new Display(displayModule, MsToTaskTime(1000/DISPLAY_FPS));
     taskManager.StartTask(display);
-
-    taskManager.StartTask(&taskPumpStuff);
-    taskManager.StartTask(&taskRelayStuff);
 
     taskManager.StartTask(&taskSchedule);
 
@@ -282,13 +277,6 @@ void loop() {
     taskManager.Loop();
 }
 
-void OnDoPump(uint32_t deltaTime) {
-    pump1.dispenseAmount(keeper1.getDoseForInterval(0));
-}
-void onDoRelay(uint32_t deltaTime) {
-    relay2.setDeviceState(!relay2.getDeviceState());
-}
-
 /*
  * // Dont think we will need this
 EventStates initEventStates(ControllerEvents m) {
@@ -331,7 +319,7 @@ void setPumpFromSettings(Chronos::EventID eventID, PumpSetting *ps, DoseKeeper &
     myCalendar.add(
             Chronos::Event(eventID,
                            ps->getDoseTime(),
-                           Chronos::Span::Hours(10)
+                           Chronos::Span::Minutes(1)
             )
     );
 }
