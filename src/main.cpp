@@ -322,7 +322,7 @@ void onDoSchedule(uint32_t deltaTime) {
 }
 
 
-void setPumpFromSettings(Chronos::EventID eventID, PumpSetting *ps, DoseKeeper dk, Pump p) {
+void setPumpFromSettings(Chronos::EventID eventID, PumpSetting *ps, DoseKeeper &dk, Pump &p) {
     dk.setDoseName(ps->getDoseName());
     dk.setDailyDoseMl(ps->getDoseAmount());
     p.setDeviceName(ps->getName());
