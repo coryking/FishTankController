@@ -2,26 +2,23 @@
 // Created by Cory King on 2/18/17.
 //
 
-#include <Arduino.h>
-#include <Task.h>
-#include "shift.h"
 #include "pump.h"
-
-#define PUMP_DEBUG false
+#define max(a,b) ((a)>(b)?(a):(b))
+//#define PUMP_DEBUG false
 
 void Pump::OnUpdate(uint32_t deltaTime){
     Task::OnUpdate(deltaTime);
     uint32_t amountPumped = 0;
     if(getMotorState() == MotorState::ACTIVE) {
         amountPumped = NlPerMs * deltaTime;
-        this->requestedAmountNl = max(0, (int32_t)(this->requestedAmountNl - amountPumped));
-        if(PUMP_DEBUG) {
+        this->requestedAmountNl = max(0, this->requestedAmountNl-amountPumped); // ((this->requestedAmountNl - amountPumped)>0)?(this->requestedAmountNl - amountPumped):0;
+#ifdef PUMP_DEBUG
             Serial.print(this->requestedAmountNl);
             Serial.print(" ");
             Serial.print(deltaTime);
             Serial.print(" ");
             Serial.println(amountPumped);
-        }
+#endif
         if(this->requestedAmountNl <= 0) {
             Serial.print(this->getDeviceName());
             Serial.println(": Setting to idle...");
@@ -67,4 +64,13 @@ void Pump::stopDispenser() {
 
 bool Pump::isDispensing() {
     return this->getDeviceState();
+}
+
+void Pump::toJson(JsonObject &obj) {
+    obj["name"] = this->getDeviceName();
+    obj["isDispensing"]= this->isDispensing();
+    obj["NLPerMs"] = String(this->NlPerMs);
+    obj["dispensedAmountNl"] = this->getAmountDispensedNl();
+    obj["requestedAmountNl"] = this->requestedAmountNl;
+    obj["currentState"] = this->currentState;
 }

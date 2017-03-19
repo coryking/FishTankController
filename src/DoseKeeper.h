@@ -5,8 +5,9 @@
 #ifndef FISHTANKCONTROLLER_DOSEKEEPER_H
 #define FISHTANKCONTROLLER_DOSEKEEPER_H
 
-#include<Arduino.h>
+#include <Arduino.h>
 #include <stdint.h>
+#include <ArduinoJson.h>
 
 class DoseKeeper {
 public:
@@ -25,6 +26,8 @@ public:
     void setDailyDoseMl(float dailyDoseMl);
 
     void setDoseName(const String &doseName);
+
+    void toJson(JsonObject& obj);
 
     DoseKeeper(const uint8_t intervals, const float dailyDoseMl, const String doseName);
 private:

@@ -32,6 +32,7 @@ public:
 
     void setMlPerS(float_t mlPerS);
 
+    void toJson(JsonObject& obj);
 
     void dispenseAmount(float_t theRequestedAmountMl) {
         Serial.print(this->requestedAmountNl);

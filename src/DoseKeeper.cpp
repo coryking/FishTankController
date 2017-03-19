@@ -41,3 +41,9 @@ void DoseKeeper::setDailyDoseMl(float dailyDoseMl) {
 void DoseKeeper::setDoseName(const String &doseName) {
     DoseKeeper::doseName = doseName;
 }
+
+void DoseKeeper::toJson(JsonObject &obj) {
+    obj.set("dailyDoseMl", String(this->getDailyDoseMl()));
+    obj["name"] = this->getDoseName();
+    obj["intervals"] = this->getIntervals();
+}

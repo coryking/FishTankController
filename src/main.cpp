@@ -92,8 +92,6 @@ time_t syncRtcTime() {
 
 void setup() {
     sprintf(hostString, "ESP_%06X", ESP.getChipId());
-
-
     Serial.begin(9600);
 
     setupWiFi();
@@ -108,8 +106,6 @@ void setup() {
     Serial.println("WiFi connected");
 
     delay(3000);
-
-
     SPIFFS.begin();
 
     setupTwoWire();
@@ -202,11 +198,23 @@ void setupWebServer() {
     ArRequestHandlerFunction getConfig = [](AsyncWebServerRequest *request){
         AsyncResponseStream *response = request->beginResponseStream("text/json");
 
-        StaticJsonBuffer<400> jsonBuffer;
+        DynamicJsonBuffer jsonBuffer;
         JsonObject& json = jsonBuffer.createObject();
-        settings.toJson(json);
+        JsonObject& jset = json.createNestedObject("settings");
+        settings.toJson(jset);
 
-        json.printTo(*response);
+        JsonObject& jcur = json.createNestedObject("current");
+        JsonObject& kj1 = jcur.createNestedObject("keeper1");
+        JsonObject& kj2 = jcur.createNestedObject("keeper2");
+        keeper1.toJson(kj1);
+        keeper2.toJson(kj2);
+
+        JsonObject& pj1 = jcur.createNestedObject("pump1");
+        JsonObject& pj2 = jcur.createNestedObject("pump2");
+        pump1.toJson(pj1);
+        pump2.toJson(pj2);
+
+        json.prettyPrintTo(*response);
 
         request->send(response);
     };
@@ -214,6 +222,59 @@ void setupWebServer() {
 
     ArBodyHandlerFunction  onPostBodyHandler = &onPostConfig;
     AsyncCallbackWebHandler pHandler = server.on("/config", HTTP_POST, getConfig, NULL, onPostBodyHandler);
+
+    ArRequestHandlerFunction  getCalendar = [](AsyncWebServerRequest *request){
+        AsyncResponseStream *response = request->beginResponseStream("text/json");
+
+        DynamicJsonBuffer jsonBuffer;
+        JsonObject& json = jsonBuffer.createObject();
+
+        json["currentTime"] = Utils::printDT(Chronos::DateTime::now());
+
+        Chronos::Event::Occurrence occurrenceList[14];
+        uint8_t future = myCalendar.listNext(14, occurrenceList, Chronos::DateTime::now());
+        JsonArray& jar = json.createNestedArray("events");
+        for (uint8_t i=0; i<future; i++) {
+            JsonObject& evnt = jar.createNestedObject();
+            Utils::eventToJson(occurrenceList[i], evnt);
+        }
+
+        Chronos::Event::Occurrence ongoingList[14];
+        uint8_t numOngoing = myCalendar.listOngoing(14, ongoingList, Chronos::DateTime::now());
+        JsonArray& oj = json.createNestedArray("ongoing");
+        for (uint8_t i=0; i<numOngoing; i++) {
+            JsonObject& evnt = oj.createNestedObject();
+            Utils::eventToJson(ongoingList[i], evnt);
+        }
+        json.prettyPrintTo(*response);
+
+        request->send(response);
+    };
+    server.on("/calendar", HTTP_GET, getCalendar);
+
+    ArRequestHandlerFunction setTheTime = [](AsyncWebServerRequest *request) {
+        DateTime dt = DateTime(
+                request->getParam("year", true)->value().toInt(),
+                request->getParam("month", true)->value().toInt(),
+                request->getParam("day", true)->value().toInt(),
+                request->getParam("hour", true)->value().toInt(),
+                request->getParam("minute", true)->value().toInt(),
+                request->getParam("second", true)->value().toInt()
+        );
+        rtc->adjust(dt);
+        setTime(dt.unixtime());
+        AsyncResponseStream *response = request->beginResponseStream("text/json");
+        DynamicJsonBuffer jsonBuffer;
+        JsonObject& json = jsonBuffer.createObject();
+
+        json["chronos"] = Utils::printDT(Chronos::DateTime::now());
+        json["rtc"] = Utils::printDT(dt);
+        json["now"] = now();
+        json.printTo(*response);
+
+        request->send(response);
+    };
+    server.on("/time", HTTP_POST, setTheTime);
 
     server.begin();
     Serial.println("Web Server Running...");
@@ -225,7 +286,7 @@ void loop() {
 }
 
 void OnDoPump(uint32_t deltaTime) {
-    pump1.dispenseAmount(keeper1.getDoseForInterval(1));
+    pump1.dispenseAmount(keeper1.getDoseForInterval(0));
 }
 void onDoRelay(uint32_t deltaTime) {
     relay2.setDeviceState(!relay2.getDeviceState());
@@ -289,14 +350,14 @@ void setRelayFromSettings(Chronos::EventID eventID, RelaySetting *rs, Relay *r) 
 void setDevicesFromSettings() {
     setPumpFromSettings(P1_EVENT, settings.getPump1(), keeper1, pump1);
     eventList.setEvent(P1_EVENT, [](){
-        pump1.dispenseAmount(keeper1.getDoseForInterval(1));
+        pump1.dispenseAmount(keeper1.getDoseForInterval(0));
     }, [](){
 
     });
 
     setPumpFromSettings(P2_EVENT, settings.getPump2(), keeper2, pump2);
     eventList.setEvent(P2_EVENT, [](){
-        pump2.dispenseAmount(keeper2.getDoseForInterval(1));
+        pump2.dispenseAmount(keeper2.getDoseForInterval(0));
     }, [](){
 
     });

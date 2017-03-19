@@ -4,7 +4,7 @@
 
 #include "shift.h"
 
-#define SHIFT_DEBUG false
+//#define SHIFT_DEBUG
 
 Shifty* setupShiftReg() {
     Shifty* reg = new Shifty();
@@ -14,12 +14,12 @@ Shifty* setupShiftReg() {
 }
 
 void printStatus(uint8_t pin, ShiftDevice *device) {
-    if(SHIFT_DEBUG) {
+#ifdef SHIFT_DEBUG
         Serial.print("Writing to ");
         Serial.print(pin);
         Serial.print(" ");
         Serial.println(device->getDeviceState());
-    }
+#endif
 }
 
 ShiftRegister& ShiftRegister::addDevice(uint8_t pin, bool isInputDevice, ShiftDevice *device) {
@@ -47,11 +47,11 @@ void ShiftRegister::readFromPins() const {
         if(map[i].device != NULL) {
             if (map[i].mode == READ) {
                 bool state = reg->readBit(i);
-                if(SHIFT_DEBUG) {
+#ifdef SHIFT_DEBUG
                     Serial.print(i);
                     Serial.print(" reading... ");
                     Serial.println(state);
-                }
+#endif
                 map[i].device->setDeviceState(state);
                 printStatus(i, map[i].device);
             }

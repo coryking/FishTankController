@@ -153,11 +153,11 @@ public:
 
     void toJson(JsonObject &obj) {
         obj.set(JSON_NAME, this->Name);
+        obj.set(JSON_DURATION_HOURS, this->hours);
         JsonObject &schedule = obj.createNestedObject("on");
         schedule.set(JSON_HOUR, this->onTime->next(Chronos::DateTime::now()).hour());
         schedule.set(JSON_MINUTE, this->onTime->next(Chronos::DateTime::now()).minute());
         schedule.set(JSON_SECOND, this->onTime->next(Chronos::DateTime::now()).second());
-        obj.set(JSON_DURATION_HOURS, this->hours);
     }
 
 };
