@@ -5,6 +5,7 @@
 #ifndef FISHTANKCONTROLLER_PUMP_H
 #define FISHTANKCONTROLLER_PUMP_H
 
+#include <functional>
 #include <Arduino.h>
 #include <Task.h>
 #include "shift.h"
@@ -16,15 +17,22 @@ enum MotorState {
     FORCE_ACTIVE
 };
 
+class Pump;
+
+typedef std::function<void(Pump*)> AmountDispensedFn;
+
+
 class Pump : public Task, public ShiftDevice {
 private:
     uint32_t dispensedAmountNl;
     uint32_t requestedAmountNl;
     uint32_t NlPerMs;
     MotorState currentState = MotorState::IDLE;
+    AmountDispensedFn amountDispensedFn = NULL;
 
 public:
     Pump(float mlPerS, String pumpName);
+    Pump(float mlPerS, String pumpName, AmountDispensedFn amountDispensedFn);
 
     void startDispenser();
     void stopDispenser();
@@ -59,6 +67,8 @@ public:
     MotorState getMotorState() {
         return currentState;
     }
+
+    void setAmountDispensedFn(AmountDispensedFn &amountDispensedFn);
 
     virtual bool getDeviceState() {
         return (getMotorState() != MotorState::IDLE);

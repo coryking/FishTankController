@@ -23,6 +23,9 @@ void Pump::OnUpdate(uint32_t deltaTime){
             Serial.print(this->getDeviceName());
             Serial.println(": Setting to idle...");
             currentState = MotorState::IDLE;
+            if(this->amountDispensedFn != NULL) {
+                this->amountDispensedFn(this);
+            }
         }
     }
     if(getMotorState() == MotorState::FORCE_ACTIVE) {
@@ -73,4 +76,12 @@ void Pump::toJson(JsonObject &obj) {
     obj["dispensedAmountNl"] = this->getAmountDispensedNl();
     obj["requestedAmountNl"] = this->requestedAmountNl;
     obj["currentState"] = this->currentState;
+}
+
+Pump::Pump(float mlPerS, String pumpName, AmountDispensedFn amountDispensedFn) : Pump(mlPerS, pumpName) {
+    this->amountDispensedFn = amountDispensedFn;
+}
+
+void Pump::setAmountDispensedFn(AmountDispensedFn &amountDispensedFn) {
+    Pump::amountDispensedFn = amountDispensedFn;
 }

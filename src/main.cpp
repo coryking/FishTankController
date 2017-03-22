@@ -141,14 +141,28 @@ void setup() {
     Serial.println("Relays are set up...");
 
     button1.setOnReleased([](Button *button){
-        pump1.stopDispenser();
+        if(pump1.getMotorState() == FORCE_ACTIVE)
+            pump1.stopDispenser();
     }).setOnPressed([](Button *button){
-        pump1.startDispenser();
+        pump1.dispenseAmount(keeper1.getDoseForInterval(0));
+        AmountDispensedFn dispensed1Fn = [](Pump* thePump) {
+            if(button1.isPressed()) {
+                pump1.startDispenser();
+            }
+        };
+        pump1.setAmountDispensedFn(dispensed1Fn);
     });
     button2.setOnReleased([](Button *button){
-        pump2.stopDispenser();
+        if(pump2.getMotorState() == FORCE_ACTIVE)
+            pump2.stopDispenser();
     }).setOnPressed([](Button *button){
-        pump2.startDispenser();
+        pump2.dispenseAmount(keeper2.getDoseForInterval(0));
+        AmountDispensedFn dispensed2Fn = [](Pump* thePump) {
+            if(button2.isPressed()) {
+                pump2.startDispenser();
+            }
+        };
+        pump2.setAmountDispensedFn(dispensed2Fn);
     });
 
     reg.addDevice(BUTTON1_PIN, true, &button1)
@@ -162,11 +176,10 @@ void setup() {
     display = new Display(displayModule, MsToTaskTime(1000/DISPLAY_FPS));
     taskManager.StartTask(display);
 
-    taskManager.StartTask(&taskSchedule);
-
-
-    settings = loadSettings(settings);
-    setDevicesFromSettings();
+    // for the MVP we are gonna leave out the scheduling aspect of this...
+    //settings = loadSettings(settings);
+    //setDevicesFromSettings();
+    //taskManager.StartTask(&taskSchedule);
 
     setupMDNS();
     setupWebServer();
