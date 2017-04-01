@@ -15,6 +15,7 @@ U8G2* setupDisplay();
 class Display : public Task {
 private:
     U8G2* display;
+    void showPump(int hLine, Pump* pump, DoseKeeper* keeper);
 public:
     Display(
             U8G2* display,

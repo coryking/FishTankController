@@ -25,6 +25,16 @@ U8G2* setupDisplay() {
     return display;
 }
 
+void Display::showPump(int hLine, Pump* pump, DoseKeeper *keeper) {
+    if(pump->isDispensing()) {
+        display->setCursor(0, hLine);
+        display->print(keeper->getDoseName());
+        display->setCursor(50,hLine);
+        display->print(Utils::NLtoML(pump->getAmountDispensedNl()));
+        display->print(" mL");
+    }
+}
+
 void Display::OnUpdate(uint32_t deltaTime) {
     Task::OnUpdate(deltaTime);
 
@@ -41,15 +51,8 @@ void Display::OnUpdate(uint32_t deltaTime) {
     int w = display->getStrWidth(ptime);
     display->drawStr(128-w, 15, ptime);
 
-    if(GlobalState::instance()->getP1()->isDispensing()) {
-        display->setCursor(0, 40);
-        display->print(Utils::NLtoML(GlobalState::instance()->getP1()->getAmountDispensedNl()));
-        display->print(" mL");
-    }
-    if(GlobalState::instance()->getP2()->isDispensing()) {
-        display->setCursor(0, 60);
-        display->print(Utils::NLtoML(GlobalState::instance()->getP2()->getAmountDispensedNl()));
-        display->print(" mL");
-    }
+    this->showPump(40, GlobalState::instance()->getP1(), GlobalState::instance()->getDk1());
+    this->showPump(60, GlobalState::instance()->getP2(), GlobalState::instance()->getDk2());
+
     display->sendBuffer();
 }

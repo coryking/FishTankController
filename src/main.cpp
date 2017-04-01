@@ -153,6 +153,8 @@ void setup() {
        .addDevice(BUTTON2_PIN, true, &button2);
     builder.setButtons(&button1, &button2);
 
+    builder.setDoseKeepers(&keeper1, &keeper2);
+
     taskManager.StartTask(&reg);
     Serial.println("Shift Register is set up...");
     builder.initialize();
@@ -161,8 +163,8 @@ void setup() {
     taskManager.StartTask(display);
 
     // for the MVP we are gonna leave out the scheduling aspect of this...
-    //settings = loadSettings(settings);
-    //setDevicesFromSettings();
+    settings = loadSettings(settings);
+    setDevicesFromSettings();
     //taskManager.StartTask(&taskSchedule);
 
     setupMDNS();
