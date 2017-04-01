@@ -5,56 +5,45 @@
 #ifndef FISHTANKCONTROLLER_WIFI_H
 #define FISHTANKCONTROLLER_WIFI_H
 
+#include <functional>
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
-#include <NtpClientLib.h>
-
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 
 #define YOUR_WIFI_SSID "Cats Drinking Wine"
 #define YOUR_WIFI_PASSWD "catsmeow"
 
+WiFiUDP ntpUDP;
 AsyncWebServer server(80);
 char hostString[16] = {0};
 
-void onSTAGotIP(WiFiEventStationModeGotIP ipInfo) {
-    Serial.printf("Got IP: %s\r\n", ipInfo.ip.toString().c_str());
-    NTP.begin("pool.ntp.org", 1, true);
-    NTP.setInterval(63, 6300);
-}
-
-void onSTADisconnected(WiFiEventStationModeDisconnected event_info) {
-    Serial.printf("Disconnected from SSID: %s\n", event_info.ssid.c_str());
-    Serial.printf("Reason: %d\n", event_info.reason);
-}
-
-void onNTPSyncEvent(NTPSyncEvent_t ntpEvent) {
-    if (ntpEvent) {
-        Serial.print("Time Sync error: ");
-        if (ntpEvent == noResponse)
-            Serial.println("NTP server not reachable");
-        else if (ntpEvent == invalidAddress)
-            Serial.println("Invalid NTP server address");
-    }
-    else {
-        Serial.print("Got NTP time: ");
-        Serial.println(NTP.getTimeDateString(NTP.getLastNTPSync()));
-    }
-}
+NTPClient timeClient(ntpUDP, "pool.ntp.org", 0, 60000);
 
 void setupWiFi() {
     static WiFiEventHandler e1, e2;
+
     WiFi.mode(WIFI_STA);
-    WiFi.begin(YOUR_WIFI_SSID, YOUR_WIFI_PASSWD);
 
     //onSyncEvent_t onSyncHandler = onNTPSyncEvent;
     //NTP.onNTPSyncEvent(onSyncHandler);
-    WiFi.onEvent([](WiFiEvent_t e) {
-        Serial.printf("Event wifi -----> %d\n", e);
-    });
-    //e1 = WiFi.onStationModeGotIP(onSTAGotIP);// As soon WiFi is connected, start NTP Client
-    //e2 = WiFi.onStationModeDisconnected(onSTADisconnected);
+    std::function<void(const WiFiEventStationModeGotIP&)> handler = [](WiFiEventStationModeGotIP ipInfo) {
+        Serial.printf("Got IP: %s\r\n", ipInfo.ip.toString().c_str());
+        //NTP.begin("pool.ntp.org", 1, true);
+        timeClient.begin();
+    };
+    e1 = WiFi.onStationModeGotIP(handler);// As soon WiFi is connected, start NTP Client
+    WiFi.begin(YOUR_WIFI_SSID, YOUR_WIFI_PASSWD);
 
+    Serial.print("Waiting for Wifi");
+    while (WiFi.status() != WL_CONNECTED) {
+        Serial.print(".");
+        delay(500);
+    }
+    WiFi.printDiag(Serial);
+    Serial.println("");
+    Serial.println("WiFi connected");
 }
 
 void setupMDNS() {

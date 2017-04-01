@@ -81,6 +81,10 @@ public:
         return dk2;
     }
 
+    bool isDispensing() {
+        return p1->isDispensing() || p2->isDispensing();
+    }
+
     static GlobalState *instance() {
         return s_instance;
     }

@@ -35,7 +35,7 @@
 #include "display.h"
 
 #define DISPLAY_FPS 15
-#define SYNC_INTERVAL 30
+#define SYNC_INTERVAL 1
 
 GlobalState *GlobalState::s_instance = 0;
 
@@ -81,7 +81,17 @@ Button::ButtonCallbackFn makePressedButtonCb(Pump* pump, DoseKeeper* doseKeeper)
 Button::ButtonCallbackFn makeReleasedButtonCb(Pump* pump);
 
 time_t syncRtcTime() {
-    if(rtc != NULL) {
+    static unsigned long last_sync = millis();
+    Serial.println("Sync RTC Time");
+
+    if (rtc != NULL) {
+        if(millis() - last_sync >= 5 * 60 * 1000) {
+            Serial.println("setting based on NTP");
+            last_sync = millis();
+            rtc->adjust(DateTime(timeClient.getEpochTime()));
+            setTime(timeClient.getEpochTime());
+        }
+
         return rtc->now().unixtime();
     } else {
         return 0;
@@ -93,15 +103,6 @@ void setup() {
     Serial.begin(9600);
 
     setupWiFi();
-
-    Serial.print("Waiting for Wifi");
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-        Serial.print(WiFi.status());
-    }
-    Serial.println("");
-    Serial.println("WiFi connected");
 
     SPIFFS.begin();
 
@@ -300,6 +301,8 @@ void setupWebServer() {
 
 void loop() {
     taskManager.Loop();
+    delay(0);
+    timeClient.update();
 }
 
 /*
