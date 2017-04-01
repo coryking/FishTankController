@@ -27,9 +27,10 @@ U8G2* setupDisplay() {
 
 void Display::showPump(int hLine, Pump* pump, DoseKeeper *keeper) {
     if(pump->isDispensing()) {
+        display->setFont(u8g2_font_helvR10_tr);
         display->setCursor(0, hLine);
         display->print(keeper->getDoseName());
-        display->setCursor(50,hLine);
+        display->setCursor(60,hLine);
         display->print(Utils::NLtoML(pump->getAmountDispensedNl()));
         display->print(" mL");
     }
