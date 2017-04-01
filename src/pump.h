@@ -68,7 +68,7 @@ public:
         return currentState;
     }
 
-    void setAmountDispensedFn(AmountDispensedFn &amountDispensedFn);
+    void setAmountDispensedFn(AmountDispensedFn amountDispensedFn);
 
     virtual bool getDeviceState() {
         return (getMotorState() != MotorState::IDLE);

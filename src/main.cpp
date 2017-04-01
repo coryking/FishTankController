@@ -50,8 +50,8 @@ Display* display;
 
 ShiftRegister reg(MsToTaskTime(10));
 
-DoseKeeper keeper1(1, 30.0, "Macro");
-DoseKeeper keeper2(1, 30.0, "Trace");
+DoseKeeper keeper1(1, 5.0, "Macro");
+DoseKeeper keeper2(1, 5.0, "Trace");
 
 Pump pump1(0.78, "P1");
 Pump pump2(0.73, "P2");
@@ -75,6 +75,10 @@ FunctionTask taskSchedule(onDoSchedule, MsToTaskTime(1000));
 void setDevicesFromSettings();
 
 void setupWebServer();
+
+AmountDispensedFn makeAmounDispensedCb(Button* button);
+Button::ButtonCallbackFn makePressedButtonCb(Pump* pump, DoseKeeper* doseKeeper);
+Button::ButtonCallbackFn makeReleasedButtonCb(Pump* pump);
 
 time_t syncRtcTime() {
     if(rtc != NULL) {
@@ -140,30 +144,10 @@ void setup() {
     builder.setRelays(&relay1, &relay2);
     Serial.println("Relays are set up...");
 
-    button1.setOnReleased([](Button *button){
-        if(pump1.getMotorState() == FORCE_ACTIVE)
-            pump1.stopDispenser();
-    }).setOnPressed([](Button *button){
-        pump1.dispenseAmount(keeper1.getDoseForInterval(0));
-        AmountDispensedFn dispensed1Fn = [](Pump* thePump) {
-            if(button1.isPressed()) {
-                pump1.startDispenser();
-            }
-        };
-        pump1.setAmountDispensedFn(dispensed1Fn);
-    });
-    button2.setOnReleased([](Button *button){
-        if(pump2.getMotorState() == FORCE_ACTIVE)
-            pump2.stopDispenser();
-    }).setOnPressed([](Button *button){
-        pump2.dispenseAmount(keeper2.getDoseForInterval(0));
-        AmountDispensedFn dispensed2Fn = [](Pump* thePump) {
-            if(button2.isPressed()) {
-                pump2.startDispenser();
-            }
-        };
-        pump2.setAmountDispensedFn(dispensed2Fn);
-    });
+    button1.setOnReleased(makeReleasedButtonCb(&pump1)).setOnPressed(makePressedButtonCb(&pump1, &keeper1));
+    button2.setOnReleased(makeReleasedButtonCb(&pump2)).setOnPressed(makePressedButtonCb(&pump2, &keeper2));
+    pump1.setAmountDispensedFn(makeAmounDispensedCb(&button1));
+    pump2.setAmountDispensedFn(makeAmounDispensedCb(&button2));
 
     reg.addDevice(BUTTON1_PIN, true, &button1)
        .addDevice(BUTTON2_PIN, true, &button2);
@@ -185,6 +169,30 @@ void setup() {
     setupWebServer();
 
     Serial.println("Bottom of setup!!");
+}
+
+AmountDispensedFn makeAmounDispensedCb(Button* button) {
+    AmountDispensedFn fn = [=](Pump* pump) {
+        if(button->isPressed()) {
+            pump->startDispenser();
+        }
+    };
+    return fn;
+}
+
+Button::ButtonCallbackFn makeReleasedButtonCb(Pump* pump) {
+    Button::ButtonCallbackFn fn = [=](Button *button) {
+        if(pump->getMotorState() == FORCE_ACTIVE)
+            pump->stopDispenser();
+    };
+    return fn;
+};
+
+Button::ButtonCallbackFn makePressedButtonCb(Pump* pump, DoseKeeper* doseKeeper) {
+    Button::ButtonCallbackFn fn = [=](Button* button){
+        pump->dispenseAmount(doseKeeper->getDoseForInterval(0));
+    };
+    return fn;
 }
 
 void onPostConfig(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {

@@ -82,6 +82,6 @@ Pump::Pump(float mlPerS, String pumpName, AmountDispensedFn amountDispensedFn) :
     this->amountDispensedFn = amountDispensedFn;
 }
 
-void Pump::setAmountDispensedFn(AmountDispensedFn &amountDispensedFn) {
+void Pump::setAmountDispensedFn(AmountDispensedFn amountDispensedFn) {
     Pump::amountDispensedFn = amountDispensedFn;
 }
