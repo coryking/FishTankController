@@ -35,7 +35,7 @@
 #include "display.h"
 
 #define DISPLAY_FPS 15
-#define SYNC_INTERVAL 1
+#define SYNC_INTERVAL 30
 
 GlobalState *GlobalState::s_instance = 0;
 
@@ -123,6 +123,8 @@ void setup() {
 
     rtc = setupRtc(displayModule);
     builder.setRTC(rtc);
+    rtc->adjust(DateTime(timeClient.getEpochTime()));
+    setTime(timeClient.getEpochTime());
     setSyncProvider(syncRtcTime);
     setSyncInterval(SYNC_INTERVAL);
     if(timeStatus() != timeSet) {

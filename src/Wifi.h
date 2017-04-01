@@ -19,7 +19,7 @@ WiFiUDP ntpUDP;
 AsyncWebServer server(80);
 char hostString[16] = {0};
 
-NTPClient timeClient(ntpUDP, "pool.ntp.org", 0, 60000);
+NTPClient timeClient(ntpUDP, "pool.ntp.org", -7 * 60 * 60, 60000);
 
 void setupWiFi() {
     static WiFiEventHandler e1, e2;
