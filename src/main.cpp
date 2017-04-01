@@ -190,7 +190,9 @@ Button::ButtonCallbackFn makeReleasedButtonCb(Pump* pump) {
 
 Button::ButtonCallbackFn makePressedButtonCb(Pump* pump, DoseKeeper* doseKeeper) {
     Button::ButtonCallbackFn fn = [=](Button* button){
-        pump->dispenseAmount(doseKeeper->getDoseForInterval(0));
+        if(pump->getMotorState() == MotorState::IDLE) {
+            pump->dispenseAmount(doseKeeper->getDoseForInterval(0));
+        }
     };
     return fn;
 }
