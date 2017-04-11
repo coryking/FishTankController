@@ -21,6 +21,10 @@ char hostString[16] = {0};
 
 NTPClient timeClient(ntpUDP, "pool.ntp.org", -7 * 60 * 60, 60000);
 
+void reconnectWiFi() {
+    WiFi.begin(YOUR_WIFI_SSID, YOUR_WIFI_PASSWD);
+}
+
 void setupWiFi() {
     static WiFiEventHandler e1, e2;
 

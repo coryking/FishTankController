@@ -35,9 +35,8 @@ DallasTemperature* setupTemp(
         display->setCursor(0,24);
         display->println("No Temp Probe");
         display->sendBuffer();
-        while (1) {
-            delay(1);
-        }
+        delay(2000);
+        return sensor;
     }
     Serial.println("Probe stuff done...");
 

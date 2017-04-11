@@ -286,6 +286,9 @@
 		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/DoseKeeper.h">
 			<Option target="FishTankController"/>
 		</Unit>
+		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/OTA.h">
+			<Option target="FishTankController"/>
+		</Unit>
 		<Unit filename="/Users/cory/ClionProjects/FishTankController/src/Settings.h">
 			<Option target="FishTankController"/>
 		</Unit>

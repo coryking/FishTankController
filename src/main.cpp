@@ -17,6 +17,8 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
 
+#include <ArduinoOTA.h>
+
 #include <ESPAsyncWebServer.h>
 
 #include "Wifi.h"
@@ -33,6 +35,7 @@
 #include "button.h"
 #include "state.h"
 #include "display.h"
+#include "OTA.h"
 
 #define DISPLAY_FPS 15
 #define SYNC_INTERVAL 30
@@ -68,6 +71,8 @@ Settings settings;
 
 DefineCalendarType(Calendar, 20)
 Calendar myCalendar;
+
+long lastWifiReconnectAttempt;
 
 void onDoSchedule(uint32_t deltaTime);
 FunctionTask taskSchedule(onDoSchedule, MsToTaskTime(1000));
@@ -117,7 +122,7 @@ void setup() {
     delay(2000);
 
     sensors = setupTemp(displayModule);
-    aquariumTemp = new Temp(sensors,0, MsToTaskTime(5000));
+    aquariumTemp = new Temp(sensors, 0, MsToTaskTime(5000));
     builder.setAquariumTemp(aquariumTemp);
     taskManager.StartTask(aquariumTemp);
 
@@ -172,7 +177,7 @@ void setup() {
 
     setupMDNS();
     setupWebServer();
-
+    setupOTA(displayModule);
     Serial.println("Bottom of setup!!");
 }
 
@@ -210,6 +215,7 @@ void onPostConfig(AsyncWebServerRequest *request, uint8_t *data, size_t len, siz
     if(input.success()) {
         settings = Settings::fromJson(input);
     }
+ //   saveSettings(settings);
 }
 
 void setupWebServer() {
@@ -305,6 +311,19 @@ void loop() {
     taskManager.Loop();
     delay(0);
     timeClient.update();
+    ArduinoOTA.handle();
+    if(WiFi.status() != WL_CONNECTED) {
+        long now = millis();
+        if (now - lastWifiReconnectAttempt > 5000) {
+            lastWifiReconnectAttempt = now;
+            // Attempt to reconnect
+            reconnectWiFi();
+
+            if (WiFi.status() == WL_CONNECTED) {
+                lastWifiReconnectAttempt = 0;
+            }
+        }
+    }
 }
 
 /*
