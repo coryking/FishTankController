@@ -59,11 +59,11 @@ void Temp::OnUpdate(uint32_t deltaTime) {
 }
 
 float Temp::getTempF() {
-    return _sensors->getTempF(this->_deviceAddress);
+    return _sensors->getTemp(this->_deviceAddress) == DEVICE_DISCONNECTED_RAW ? 0 : _sensors->getTempF(this->_deviceAddress);
 }
 
 float Temp::getTempC() {
-    return _sensors->getTempC(this->_deviceAddress);
+    return _sensors->getTemp(this->_deviceAddress) == DEVICE_DISCONNECTED_RAW ? 0 : _sensors->getTempC(this->_deviceAddress);
 }
 
 Temp::Temp(DallasTemperature *sensors, uint8 deviceIndex, uint32_t timeInterval) : Task(timeInterval) {

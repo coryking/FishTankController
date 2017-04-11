@@ -36,6 +36,7 @@
 #include "state.h"
 #include "display.h"
 #include "OTA.h"
+#include "MqttPubSub.h"
 
 #define DISPLAY_FPS 15
 #define SYNC_INTERVAL 30
@@ -71,8 +72,10 @@ Settings settings;
 
 DefineCalendarType(Calendar, 20)
 Calendar myCalendar;
+WiFiClient espClient;
+MqttPubSub mqttPubSub(espClient);
 
-long lastWifiReconnectAttempt;
+long lastWifiReconnectAttempt = 0;
 
 void onDoSchedule(uint32_t deltaTime);
 FunctionTask taskSchedule(onDoSchedule, MsToTaskTime(1000));
@@ -178,6 +181,9 @@ void setup() {
     setupMDNS();
     setupWebServer();
     setupOTA(displayModule);
+
+    taskManager.StartTask(&mqttPubSub);
+
     Serial.println("Bottom of setup!!");
 }
 
@@ -312,6 +318,7 @@ void loop() {
     delay(0);
     timeClient.update();
     ArduinoOTA.handle();
+    mqttPubSub.loop();
     if(WiFi.status() != WL_CONNECTED) {
         long now = millis();
         if (now - lastWifiReconnectAttempt > 5000) {
@@ -324,6 +331,9 @@ void loop() {
             }
         }
     }
+
+
+
 }
 
 /*

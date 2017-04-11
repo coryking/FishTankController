@@ -48,7 +48,9 @@ public:
     float getAquariumTempF() const {
         return this->_aquariumTemp->getTempF();
     }
-
+    float getAquariumTempC() const {
+        return this->_aquariumTemp->getTempC();
+    }
     DateTime getTime() const {
         return this->rtc->now();
     }
