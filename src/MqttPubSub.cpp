@@ -23,7 +23,7 @@ void MqttPubSub::OnUpdate(uint32_t deltaTime) {
 void MqttPubSub::loop() {
 
     if (!this->client.connected()) {
-        long now = millis();
+        ulong now = millis();
         if (now - lastReconnectAttempt > 5000) {
             lastReconnectAttempt = now;
             // Attempt to reconnect
@@ -39,7 +39,7 @@ void MqttPubSub::loop() {
 }
 
 bool MqttPubSub::reconnect() {
-    if (client.connect(MQTT_SERVER)) {
+    if (client.connect(this->hostString)) {
         // ... and resubscribe
         this->setSubscriptions();
     }

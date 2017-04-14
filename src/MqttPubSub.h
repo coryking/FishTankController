@@ -22,13 +22,17 @@
 class MqttPubSub : public Task {
 private:
     PubSubClient client;
-    long lastReconnectAttempt = 0;
+    ulong lastReconnectAttempt = 0;
     void setSubscriptions();
     bool reconnect();
+    char hostString[16] = {0};
+
 
     void mqttCallback(char* topic, byte* payload, unsigned int length);
 public:
     MqttPubSub(WiFiClient& wifiClient) : Task(MsToTaskTime(5000)) {
+        sprintf(hostString, "ESP_%06X", ESP.getChipId());
+
         this->client = PubSubClient(wifiClient);
         client.setServer(MQTT_SERVER, 1883);
         client.setCallback([this](char* topic, byte* payload, unsigned int length) {
