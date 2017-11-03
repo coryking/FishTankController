@@ -13,6 +13,9 @@
 #define SCL_PIN D7
 #define SDA_PIN D6
 
+#define LIGHT_1_PIN D0
+#define LIGHT_2_PIN D8
+
 #define SHIFT_CLOCK_PIN D2
 #define SHIFT_LATCH_PIN D3
 #define SHIFT_DATA_PIN D4

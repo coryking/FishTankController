@@ -13,6 +13,10 @@
 #include "Button.h"
 #include "DoseKeeper.h"
 
+typedef struct LightStatusSt {
+    int lightNumber;
+    int brightness;
+} LightStatus;
 
 class GlobalState {
     static GlobalState *s_instance;

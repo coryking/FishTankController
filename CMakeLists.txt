@@ -51,4 +51,4 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_executable(${PROJECT_NAME} ${SRC_LIST} src/MqttPubSub.h src/MqttPubSub.cpp)
+add_executable(${PROJECT_NAME} ${SRC_LIST} src/Light.h)

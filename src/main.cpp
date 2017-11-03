@@ -37,6 +37,7 @@
 #include "display.h"
 #include "OTA.h"
 #include "MqttPubSub.h"
+#include "Light.h"
 
 #define DISPLAY_FPS 15
 #define SYNC_INTERVAL 30
@@ -66,6 +67,9 @@ Relay relay2("R2");
 Button button1("B1");
 Button button2("B2");
 
+Light light1(1, LIGHT_1_PIN);
+Light light2(2, LIGHT_2_PIN);
+
 ControllerEventList eventList;
 
 Settings settings;
@@ -88,6 +92,10 @@ AmountDispensedFn makeAmounDispensedCb(Button* button);
 Button::ButtonCallbackFn makePressedButtonCb(Pump* pump, DoseKeeper* doseKeeper);
 Button::ButtonCallbackFn makeReleasedButtonCb(Pump* pump);
 
+float aquariumTempCb();
+void triggerPumpCb(int pumpNum);
+bool getPumpStatusCb(int pumpNum);
+
 time_t syncRtcTime() {
     static unsigned long last_sync = millis();
     Serial.println("Sync RTC Time");
@@ -106,10 +114,17 @@ time_t syncRtcTime() {
     }
 }
 
+LightStatus getLightStatus(int light) {
+    if(light == 1) {
+        return {1, light1.GetBrightness()};
+    } else {
+        return {2, light2.GetBrightness()};
+    }
+}
+
 void setup() {
     sprintf(hostString, "ESP_%06X", ESP.getChipId());
     Serial.begin(9600);
-
     setupWiFi();
 
     SPIFFS.begin();
@@ -182,9 +197,39 @@ void setup() {
     setupWebServer();
     setupOTA(displayModule);
 
+    mqttPubSub.setAquariumTempCallback(aquariumTempCb);
+    mqttPubSub.setPumpStatusCallback(getPumpStatusCb);
+    mqttPubSub.setPumpTriggerCallback(triggerPumpCb);
+
+    mqttPubSub.setLightBrightnessCallback([](int light, uint8 brightness) {
+        if(light==1) {
+            light1.SetBrightness(brightness);
+        } else {
+            light2.SetBrightness(brightness);
+        }
+    });
+    mqttPubSub.setLightStatusCallback(getLightStatus);
     taskManager.StartTask(&mqttPubSub);
 
     Serial.println("Bottom of setup!!");
+}
+
+float aquariumTempCb() {
+    return aquariumTemp->getTempC();
+}
+
+void triggerPumpCb(int pumpNum) {
+    Pump* thePump = (pumpNum == 1) ? &pump1 : &pump2;
+    DoseKeeper* theDk = (pumpNum == 1) ? &keeper1 : &keeper2;
+
+    if(thePump->getMotorState() == MotorState::IDLE) {
+        thePump->dispenseAmount(theDk->getDoseForInterval(0));
+    }
+}
+
+bool getPumpStatusCb(int pumpNum) {
+    Pump* thePump = (pumpNum == 1) ? &pump1 : &pump2;
+    return thePump->isDispensing();
 }
 
 AmountDispensedFn makeAmounDispensedCb(Button* button) {
@@ -414,3 +459,9 @@ void setDevicesFromSettings() {
     });
 }
 
+void onDoLighting(uint32_t deltaTime) {
+    static uint16_t count=0;
+    analogWrite(LIGHT_1_PIN, count % 1024);
+    analogWrite(LIGHT_2_PIN, count % 1024);
+    count++;
+}
