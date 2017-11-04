@@ -16,6 +16,7 @@
 
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
+#include <Syslog.h>
 
 #include <ArduinoOTA.h>
 
@@ -41,6 +42,16 @@
 
 #define DISPLAY_FPS 15
 #define SYNC_INTERVAL 30
+
+#define MQTT_SERVER "mqtt.gotokingfamily.com"
+#define MQTT_PORT 1883
+
+// Syslog server connection info
+#define SYSLOG_SERVER "192.168.1.85"
+#define SYSLOG_PORT 514
+
+// This device info
+#define APP_NAME "fishtank"
 
 GlobalState *GlobalState::s_instance = 0;
 
@@ -74,10 +85,13 @@ ControllerEventList eventList;
 
 Settings settings;
 
+WiFiUDP udpClient;
+Syslog syslog(udpClient, SYSLOG_PROTO_BSD);
+
+
 DefineCalendarType(Calendar, 20)
 Calendar myCalendar;
-WiFiClient espClient;
-MqttPubSub mqttPubSub(espClient);
+MqttPubSub mqttPubSub(MQTT_SERVER, MQTT_PORT, &syslog);
 
 long lastWifiReconnectAttempt = 0;
 
@@ -126,6 +140,11 @@ void setup() {
     sprintf(hostString, "ESP_%06X", ESP.getChipId());
     Serial.begin(9600);
     setupWiFi();
+    syslog.server(SYSLOG_SERVER, SYSLOG_PORT);
+    syslog.deviceHostname(hostString);
+    syslog.appName(APP_NAME);
+    syslog.defaultPriority(LOG_DAEMON);
+    syslog.logf(LOG_WARNING, "Hello from [%s]\n", hostString);
 
     SPIFFS.begin();
 
@@ -363,7 +382,6 @@ void loop() {
     delay(0);
     timeClient.update();
     ArduinoOTA.handle();
-    mqttPubSub.loop();
     if(WiFi.status() != WL_CONNECTED) {
         long now = millis();
         if (now - lastWifiReconnectAttempt > 5000) {

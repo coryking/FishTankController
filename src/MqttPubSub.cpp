@@ -59,16 +59,16 @@ void MqttPubSub::mqttCallback(char *topic, byte *payload, unsigned int length) {
 void MqttPubSub::publishLightStatus(LightStatus ls) {
     auto br = String(ls.brightness);
     if(ls.lightNumber ==1) {
-        this->client.publish(MQTT_LIGHT_1_STATUS, br.c_str());
+        this->publish(MQTT_LIGHT_1_STATUS, br.c_str());
     } else {
-        this->client.publish(MQTT_LIGHT_2_STATUS, br.c_str());
+        this->publish(MQTT_LIGHT_2_STATUS, br.c_str());
     }
 }
 void MqttPubSub::publishTemp() {
     Serial.println("Sending temp over MQTT");
     if (this->aquariumTempCallback != NULL) {
         String tempStr = String(this->aquariumTempCallback());
-        this->client.publish(MQTT_GET_TEMP, tempStr.c_str());
+        this->publish(MQTT_GET_TEMP, tempStr.c_str());
     }
 }
 
@@ -79,9 +79,9 @@ void MqttPubSub::publishPumpStatus() {
             sprintf(statusTopic, MQTT_PUMP_STATUS, pumpNumber);
             bool theStatus = this->pumpStatusCallback(pumpNumber);
             if (theStatus) {
-                this->client.publish(statusTopic, "true");
+                this->publish(statusTopic, "true");
             } else {
-                this->client.publish(statusTopic, "false");
+                this->publish(statusTopic, "false");
             }
         }
     }
@@ -90,44 +90,17 @@ void MqttPubSub::publishPumpStatus() {
 void MqttPubSub::setSubscriptions() {
     Serial.println("Setting subscriptions...");
     // nothing to subscribe to...
-    this->client.subscribe(MQTT_PUMP1_GO);
-    this->client.subscribe(MQTT_PUMP2_GO);
-    this->client.subscribe(MQTT_LIGHT_1_BRIGHTNESS);
-    this->client.subscribe(MQTT_LIGHT_2_BRIGHTNESS);
+    this->subscribe(MQTT_PUMP1_GO);
+    this->subscribe(MQTT_PUMP2_GO);
+    this->subscribe(MQTT_LIGHT_1_BRIGHTNESS);
+    this->subscribe(MQTT_LIGHT_2_BRIGHTNESS);
     //this->client.subscribe(MQTT_LIGHT_1_STATUS);
     //this->client.subscribe(MQTT_LIGHT_1_STATUS);
 }
 
-void MqttPubSub::OnUpdate(uint32_t deltaTime) {
-    Task::OnUpdate(deltaTime);
+void MqttPubSub::OnDoUpdate(uint32_t deltaTime) {
     this->publishTemp();
     this->publishPumpStatus();
-}
-
-void MqttPubSub::loop() {
-
-    if (!this->client.connected()) {
-        ulong now = millis();
-        if (now - lastReconnectAttempt > 5000) {
-            lastReconnectAttempt = now;
-            // Attempt to reconnect
-            if (this->reconnect()) {
-                lastReconnectAttempt = 0;
-            }
-        }
-    } else {
-        // Client connected
-        this->client.loop();
-    }
-
-}
-
-bool MqttPubSub::reconnect() {
-    if (client.connect(this->hostString)) {
-        // ... and resubscribe
-        this->setSubscriptions();
-    }
-    return client.connected();
 }
 
 void MqttPubSub::setPumpStatusCallback(MqttPubSub::PumpStatusCallback pumpStatusCallback) {
@@ -151,3 +124,4 @@ void MqttPubSub::setLightBrightnessCallback(MqttPubSub::LightBrightnessCallback 
 void MqttPubSub::setLightStatusCallback(MqttPubSub::LightStatusCallback lightStatusCallback) {
     MqttPubSub::lightStatusCallback = lightStatusCallback;
 }
+

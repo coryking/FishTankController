@@ -11,8 +11,9 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <Task.h>
-
+#include <MqttController.h>
 #include "state.h"
+
 
 
 #define MQTT_GET_TEMP "fishtank/sensor/temp"
@@ -26,9 +27,7 @@
 #define MQTT_LIGHT_1_BRIGHTNESS "fishtank/light/1/brightness"
 #define MQTT_LIGHT_2_BRIGHTNESS "fishtank/light/2/brightness"
 
-#define MQTT_SERVER "mqtt.gotokingfamily.com"
-
-class MqttPubSub : public Task {
+class MqttPubSub : public MqttController {
 
 public:
     typedef std::function<void(int)> PumpTriggerCallback;
@@ -37,14 +36,8 @@ public:
     typedef std::function<void(int, int)> LightBrightnessCallback;
     typedef std::function<LightStatus(int)> LightStatusCallback;
 
-    MqttPubSub(WiFiClient &wifiClient) : Task(MsToTaskTime(5000)) {
-        sprintf(hostString, "ESP_%06X", ESP.getChipId());
+    MqttPubSub(const char* mqttHost, const uint16_t mqttPort, Syslog* logger) : MqttController(mqttHost, mqttPort, logger) {
 
-        this->client = PubSubClient(wifiClient);
-        client.setServer(MQTT_SERVER, 1883);
-        client.setCallback([this](char *topic, byte *payload, unsigned int length) {
-            this->mqttCallback(topic, payload, length);
-        });
     }
 
     void setPumpStatusCallback(PumpStatusCallback pumpStatusCallback);
@@ -57,19 +50,16 @@ public:
 
     void setLightStatusCallback(LightStatusCallback lightStatusCallback);
 
-    virtual void OnUpdate(uint32_t deltaTime);
+protected:
+    void OnDoUpdate(uint32_t deltaTime) override;
 
-    void loop();
+    void setSubscriptions() override;
+
+    void mqttCallback(char *topic, byte *payload, unsigned int length) override;
 
 private:
-    PubSubClient client;
-    ulong lastReconnectAttempt = 0;
 
-    void setSubscriptions();
 
-    bool reconnect();
-
-    char hostString[16] = {0};
     PumpStatusCallback pumpStatusCallback;
     PumpTriggerCallback pumpTriggerCallback;
     GetAquariumTempCallback aquariumTempCallback;
@@ -77,13 +67,12 @@ private:
     LightBrightnessCallback lightBrightnessCallback;
     LightStatusCallback lightStatusCallback;
 
-    void mqttCallback(char *topic, byte *payload, unsigned int length);
-
     void publishPumpStatus();
 
     void publishTemp();
 
     void publishLightStatus(LightStatus ls);
+
 
 };
 
