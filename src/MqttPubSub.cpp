@@ -53,7 +53,6 @@ void MqttPubSub::mqttCallback(char *topic, byte *payload, unsigned int length) {
         if ((char) payload[0] == 't' && this->pumpTriggerCallback != NULL) {
             this->pumpTriggerCallback(pumpNumber);
         }
-        this->publishPumpStatus();
     }
 }
 void MqttPubSub::publishLightStatus(LightStatus ls) {
@@ -64,27 +63,24 @@ void MqttPubSub::publishLightStatus(LightStatus ls) {
         this->publish(MQTT_LIGHT_2_STATUS, br.c_str());
     }
 }
-void MqttPubSub::publishTemp() {
+void MqttPubSub::publishTemp(float aquariumTemp) {
     Serial.println("Sending temp over MQTT");
-    if (this->aquariumTempCallback != NULL) {
-        String tempStr = String(this->aquariumTempCallback());
-        this->publish(MQTT_GET_TEMP, tempStr.c_str());
-    }
+    String tempStr = String(aquariumTemp);
+    this->publish(MQTT_GET_TEMP, tempStr.c_str());
+
 }
 
-void MqttPubSub::publishPumpStatus() {
-    if (this->pumpStatusCallback != NULL) {
-        for(int pumpNumber=1; pumpNumber<=2; pumpNumber++) {
-            char statusTopic[20] = {0};
-            sprintf(statusTopic, MQTT_PUMP_STATUS, pumpNumber);
-            bool theStatus = this->pumpStatusCallback(pumpNumber);
-            if (theStatus) {
-                this->publish(statusTopic, "true");
-            } else {
-                this->publish(statusTopic, "false");
-            }
-        }
+void MqttPubSub::publishPumpStatus(int pumpNumber, bool status) {
+
+    char statusTopic[20] = {0};
+    sprintf(statusTopic, MQTT_PUMP_STATUS, pumpNumber);
+    if (status) {
+        this->publish(statusTopic, "true");
+    } else {
+        this->publish(statusTopic, "false");
     }
+
+
 }
 
 void MqttPubSub::setSubscriptions() {
@@ -98,22 +94,8 @@ void MqttPubSub::setSubscriptions() {
     //this->client.subscribe(MQTT_LIGHT_1_STATUS);
 }
 
-void MqttPubSub::OnDoUpdate(uint32_t deltaTime) {
-    this->publishTemp();
-    this->publishPumpStatus();
-}
-
-void MqttPubSub::setPumpStatusCallback(MqttPubSub::PumpStatusCallback pumpStatusCallback) {
-    this->pumpStatusCallback = pumpStatusCallback;
-}
-
-
 void MqttPubSub::setPumpTriggerCallback(MqttPubSub::PumpTriggerCallback pumpTriggerCallback) {
     this->pumpTriggerCallback = pumpTriggerCallback;
-}
-
-void MqttPubSub::setAquariumTempCallback(MqttPubSub::GetAquariumTempCallback aquariumTempCallback) {
-    this->aquariumTempCallback = aquariumTempCallback;
 }
 
 

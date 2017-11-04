@@ -93,6 +93,11 @@ MqttPubSub mqttPubSub(MQTT_SERVER, MQTT_PORT, &syslog);
 
 long lastWifiReconnectAttempt = 0;
 
+void onPublishTemp(uint32_t deltaTime);
+FunctionTask taskPublishTemp(onPublishTemp, MsToTaskTime(30 * 1000));
+void onPublishPumpStatus(uint32_t deltaTime);
+FunctionTask taskPublishPumpStatus(onPublishPumpStatus, MsToTaskTime(1000));
+
 void onDoSchedule(uint32_t deltaTime);
 FunctionTask taskSchedule(onDoSchedule, MsToTaskTime(1000));
 
@@ -206,13 +211,13 @@ void setup() {
     // for the MVP we are gonna leave out the scheduling aspect of this...
     settings = loadSettings(settings);
     setDevicesFromSettings();
-    //taskManager.StartTask(&taskSchedule);
+
+    taskManager.StartTask(&taskPublishTemp);
+    taskManager.StartTask(&taskPublishPumpStatus);
 
     setupMDNS();
     setupOTA(displayModule);
 
-    mqttPubSub.setAquariumTempCallback(aquariumTempCb);
-    mqttPubSub.setPumpStatusCallback(getPumpStatusCb);
     mqttPubSub.setPumpTriggerCallback(triggerPumpCb);
 
     mqttPubSub.setLightBrightnessCallback([](int light, uint8 brightness) {
@@ -228,22 +233,24 @@ void setup() {
     Serial.println("Bottom of setup!!");
 }
 
-float aquariumTempCb() {
-    return aquariumTemp->getTempC();
-}
-
 void triggerPumpCb(int pumpNum) {
     Pump* thePump = (pumpNum == 1) ? &pump1 : &pump2;
     DoseKeeper* theDk = (pumpNum == 1) ? &keeper1 : &keeper2;
 
     if(thePump->getMotorState() == MotorState::IDLE) {
         thePump->dispenseAmount(theDk->getDoseForInterval(0));
+        mqttPubSub.publishPumpStatus(pumpNum, thePump->isDispensing());
     }
 }
 
-bool getPumpStatusCb(int pumpNum) {
-    Pump* thePump = (pumpNum == 1) ? &pump1 : &pump2;
-    return thePump->isDispensing();
+void onPublishTemp(uint32_t deltaTime) {
+    auto temp = aquariumTemp->getTempC();
+    mqttPubSub.publishTemp(temp);
+}
+
+void onPublishPumpStatus(uint32_t deltaTime) {
+    mqttPubSub.publishPumpStatus(1, pump1.isDispensing());
+    mqttPubSub.publishPumpStatus(2, pump2.isDispensing());
 }
 
 AmountDispensedFn makeAmounDispensedCb(Button* button) {

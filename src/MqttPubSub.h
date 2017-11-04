@@ -31,8 +31,6 @@ class MqttPubSub : public MqttController {
 
 public:
     typedef std::function<void(int)> PumpTriggerCallback;
-    typedef std::function<bool(int)> PumpStatusCallback;
-    typedef std::function<float(void)> GetAquariumTempCallback;
     typedef std::function<void(int, int)> LightBrightnessCallback;
     typedef std::function<LightStatus(int)> LightStatusCallback;
 
@@ -40,19 +38,16 @@ public:
 
     }
 
-    void setPumpStatusCallback(PumpStatusCallback pumpStatusCallback);
-
     void setPumpTriggerCallback(PumpTriggerCallback pumpTriggerCallback);
 
-    void setAquariumTempCallback(GetAquariumTempCallback aquariumTempCallback);
 
     void setLightBrightnessCallback(LightBrightnessCallback lightBrightnessCallback);
 
     void setLightStatusCallback(LightStatusCallback lightStatusCallback);
 
+    void publishTemp(float aquariumTemp);
+    void publishPumpStatus(int pumpNumber, bool status);
 protected:
-    void OnDoUpdate(uint32_t deltaTime) override;
-
     void setSubscriptions() override;
 
     void mqttCallback(char *topic, byte *payload, unsigned int length) override;
@@ -60,16 +55,13 @@ protected:
 private:
 
 
-    PumpStatusCallback pumpStatusCallback;
     PumpTriggerCallback pumpTriggerCallback;
-    GetAquariumTempCallback aquariumTempCallback;
 
     LightBrightnessCallback lightBrightnessCallback;
     LightStatusCallback lightStatusCallback;
 
-    void publishPumpStatus();
 
-    void publishTemp();
+
 
     void publishLightStatus(LightStatus ls);
 
