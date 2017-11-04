@@ -16,7 +16,6 @@
 #define YOUR_WIFI_PASSWD "catsmeow"
 
 WiFiUDP ntpUDP;
-AsyncWebServer server(80);
 char hostString[16] = {0};
 
 NTPClient timeClient(ntpUDP, "pool.ntp.org", -7 * 60 * 60, 60000);

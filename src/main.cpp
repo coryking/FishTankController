@@ -20,8 +20,6 @@
 
 #include <ArduinoOTA.h>
 
-#include <ESPAsyncWebServer.h>
-
 #include "Wifi.h"
 
 #include "Settings.h"
@@ -99,8 +97,6 @@ void onDoSchedule(uint32_t deltaTime);
 FunctionTask taskSchedule(onDoSchedule, MsToTaskTime(1000));
 
 void setDevicesFromSettings();
-
-void setupWebServer();
 
 AmountDispensedFn makeAmounDispensedCb(Button* button);
 Button::ButtonCallbackFn makePressedButtonCb(Pump* pump, DoseKeeper* doseKeeper);
@@ -213,7 +209,6 @@ void setup() {
     //taskManager.StartTask(&taskSchedule);
 
     setupMDNS();
-    setupWebServer();
     setupOTA(displayModule);
 
     mqttPubSub.setAquariumTempCallback(aquariumTempCb);
@@ -275,105 +270,6 @@ Button::ButtonCallbackFn makePressedButtonCb(Pump* pump, DoseKeeper* doseKeeper)
         }
     };
     return fn;
-}
-
-void onPostConfig(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-
-    DynamicJsonBuffer jsonInBuffer;
-    JsonObject& input = jsonInBuffer.parseObject(reinterpret_cast<char*>(data));
-
-    if(input.success()) {
-        settings = Settings::fromJson(input);
-    }
- //   saveSettings(settings);
-}
-
-void setupWebServer() {
-
-    Serial.println("Setting up Web Server...");
-    ArRequestHandlerFunction getConfig = [](AsyncWebServerRequest *request){
-        AsyncResponseStream *response = request->beginResponseStream("text/json");
-
-        DynamicJsonBuffer jsonBuffer;
-        JsonObject& json = jsonBuffer.createObject();
-        JsonObject& jset = json.createNestedObject("settings");
-        settings.toJson(jset);
-
-        JsonObject& jcur = json.createNestedObject("current");
-        JsonObject& kj1 = jcur.createNestedObject("keeper1");
-        JsonObject& kj2 = jcur.createNestedObject("keeper2");
-        keeper1.toJson(kj1);
-        keeper2.toJson(kj2);
-
-        JsonObject& pj1 = jcur.createNestedObject("pump1");
-        JsonObject& pj2 = jcur.createNestedObject("pump2");
-        pump1.toJson(pj1);
-        pump2.toJson(pj2);
-
-        json.prettyPrintTo(*response);
-
-        request->send(response);
-    };
-    server.on("/config", HTTP_GET, getConfig);
-
-    ArBodyHandlerFunction  onPostBodyHandler = &onPostConfig;
-    AsyncCallbackWebHandler pHandler = server.on("/config", HTTP_POST, getConfig, NULL, onPostBodyHandler);
-
-    ArRequestHandlerFunction  getCalendar = [](AsyncWebServerRequest *request){
-        AsyncResponseStream *response = request->beginResponseStream("text/json");
-
-        DynamicJsonBuffer jsonBuffer;
-        JsonObject& json = jsonBuffer.createObject();
-
-        json["currentTime"] = Utils::printDT(Chronos::DateTime::now());
-
-        Chronos::Event::Occurrence occurrenceList[14];
-        uint8_t future = myCalendar.listNext(14, occurrenceList, Chronos::DateTime::now());
-        JsonArray& jar = json.createNestedArray("events");
-        for (uint8_t i=0; i<future; i++) {
-            JsonObject& evnt = jar.createNestedObject();
-            Utils::eventToJson(occurrenceList[i], evnt);
-        }
-
-        Chronos::Event::Occurrence ongoingList[14];
-        uint8_t numOngoing = myCalendar.listOngoing(14, ongoingList, Chronos::DateTime::now());
-        JsonArray& oj = json.createNestedArray("ongoing");
-        for (uint8_t i=0; i<numOngoing; i++) {
-            JsonObject& evnt = oj.createNestedObject();
-            Utils::eventToJson(ongoingList[i], evnt);
-        }
-        json.prettyPrintTo(*response);
-
-        request->send(response);
-    };
-    server.on("/calendar", HTTP_GET, getCalendar);
-
-    ArRequestHandlerFunction setTheTime = [](AsyncWebServerRequest *request) {
-        DateTime dt = DateTime(
-                request->getParam("year", true)->value().toInt(),
-                request->getParam("month", true)->value().toInt(),
-                request->getParam("day", true)->value().toInt(),
-                request->getParam("hour", true)->value().toInt(),
-                request->getParam("minute", true)->value().toInt(),
-                request->getParam("second", true)->value().toInt()
-        );
-        rtc->adjust(dt);
-        setTime(dt.unixtime());
-        AsyncResponseStream *response = request->beginResponseStream("text/json");
-        DynamicJsonBuffer jsonBuffer;
-        JsonObject& json = jsonBuffer.createObject();
-
-        json["chronos"] = Utils::printDT(Chronos::DateTime::now());
-        json["rtc"] = Utils::printDT(dt);
-        json["now"] = now();
-        json.printTo(*response);
-
-        request->send(response);
-    };
-    server.on("/time", HTTP_POST, setTheTime);
-
-    server.begin();
-    Serial.println("Web Server Running...");
 }
 
 
