@@ -79,8 +79,6 @@ void MqttPubSub::publishPumpStatus(int pumpNumber, bool status) {
     } else {
         this->publish(statusTopic, "false");
     }
-
-
 }
 
 void MqttPubSub::setSubscriptions() {

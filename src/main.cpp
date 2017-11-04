@@ -297,9 +297,6 @@ void loop() {
             }
         }
     }
-
-
-
 }
 
 /*
@@ -378,11 +375,4 @@ void setDevicesFromSettings() {
     }, [](){
         relay1.setDeviceState(false);
     });
-}
-
-void onDoLighting(uint32_t deltaTime) {
-    static uint16_t count=0;
-    analogWrite(LIGHT_1_PIN, count % 1024);
-    analogWrite(LIGHT_2_PIN, count % 1024);
-    count++;
 }
